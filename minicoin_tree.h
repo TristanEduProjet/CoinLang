@@ -1,5 +1,5 @@
-#ifndef MINIPSEUDTREE
-# define MINIPSEUDTREE
+#ifndef MINICOIN_TREE
+# define MINICOIN_TREE
     
 enum NodeType {
 	NTEMPTY = 0,

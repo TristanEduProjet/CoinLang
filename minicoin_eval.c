@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <setjmp.h>
-#include "minipseudtree.h"
+#include "minicoin_tree.h"
 
 
 

@@ -71,14 +71,14 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 17 "minipseud.y"
+#line 17 "minicoin.y"
 
 	struct Node *node;
 
 
 
 /* Line 1676 of yacc.c  */
-#line 82 "minipseud.tab.h"
+#line 82 "minicoin.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

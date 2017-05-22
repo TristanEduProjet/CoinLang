@@ -1,9 +1,9 @@
 %option noyywrap
 %{
 
-#include "minipseud.h"
+#include "minicoin.h"
 #include <stdlib.h>
-#include "minipseudtree.h"
+#include "minicoin_tree.h"
 
 %}
 

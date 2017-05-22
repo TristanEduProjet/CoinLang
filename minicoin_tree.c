@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include "minipseudtree.h"
+#include "minicoin_tree.h"
 
 # define PRINTTAB 2
 

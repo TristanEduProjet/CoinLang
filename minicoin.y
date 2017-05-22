@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "minipseudtree.h"
-#include "minipseudeval.h"
+#include "minicoin_tree.h"
+#include "minicoin_eval.h"
 
 extern int  yyparse();
 extern FILE *yyin;
