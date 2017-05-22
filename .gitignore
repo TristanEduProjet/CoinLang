@@ -4,6 +4,9 @@ Flex / Bison #
 *.lex.*
 *.y.*
 
+*.scanner.*
+*.parser.*
+
 
 C / C++ #
 #########
