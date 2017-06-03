@@ -5,6 +5,8 @@ LEX.l = $(LEX) $(LFLAGS)
 YACC = bison
 YFLAGS = --warnings=all -d
 #LD=gcc
+DBGFLAGS = -g3 -ggdb3 -Og -DDEBUG -D_DEBUG
+RLSFLAGS = -O3 -DNDEBUG -D_NDEBUG
 
 
 all: minicoin
@@ -30,6 +32,14 @@ all: minicoin
 minicoin : minicoin.l.o minicoin.y.o minicoin_tree.o minicoin_eval.o
 	$(CXX) $(LOADLIBES) $(LDLIBS) $(OUTPUT_OPTION) $^
 
+debug: CFLAGS += $(DBGFLAGS)
+debug: CXXFLAGS += $(DBGFLAGS)
+debug: all
+
+release: CFLAGS += $(RLSFLAGS)
+release: CXXFLAGS += $(RLSFLAGS)
+release: all
+
 #désactivation de la suppression des fichiers intermediaires
 .SECONDARY:
 #.PRECIOUS: %.c %.o
@@ -37,7 +47,7 @@ minicoin : minicoin.l.o minicoin.y.o minicoin_tree.o minicoin_eval.o
 # pull in dependency info for *existing* .o/.d files
 -include $(wildcard *.d)
 
-.PHONY: all clean distclean
+.PHONY: all debug release clean distclean
 
 #supprime les fichiers temporaires de la compilation
 clean :
