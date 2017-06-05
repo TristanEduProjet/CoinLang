@@ -1,15 +1,12 @@
 #ifndef MINICOIN_TREE
-# define MINICOIN_TREE
-    
+#define MINICOIN_TREE
+
 enum NodeType {
 	NTEMPTY = 0,
 	NTINSTLIST = 1,
-	
-	 
 
 	NTNUM   = 201,
 	NTVAR = 222,
-	 
 
 	NTPLUS  = 321,
 	NTMIN   = 322,
@@ -18,16 +15,15 @@ enum NodeType {
 	NTPOW   = 325,
 	NTEQ = 326,
 	NTAFF = 32
-
 };
-   
+
 typedef struct Node {
 	enum NodeType type;
-	union { 
+	union {
 		double val;
 		char* var;
 		struct Node** children;
-	} ;
+	};
 } Node;
 
 Node* createNode(int type);
