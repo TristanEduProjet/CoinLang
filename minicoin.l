@@ -1,7 +1,7 @@
 %option noyywrap
 %{
 
-#include "minicoin.h"
+#include "minicoin.parser.h"
 #include <stdlib.h>
 #include "minicoin_tree.h"
 
@@ -21,7 +21,7 @@ real      {int}("."{int})?{exp}?
 
 {empty}  { /* Nothing */ }
 
- 
+
 
 "("   return(OP_PAR);
 ")"   return(CL_PAR);
@@ -31,7 +31,7 @@ real      {int}("."{int})?{exp}?
     yylval.node->var = (char*)_strdup(yytext);
     return(VAR);
     }
-	
+
 {real}    {
     yylval.node = createNode(NTNUM);
     yylval.node->val = atof(yytext);
@@ -43,13 +43,13 @@ real      {int}("."{int})?{exp}?
 "*"   { yylval.node = createNode(NTMULT); return(MULT); }
 "/"   { yylval.node = createNode(NTDIV); return(DIV); }
 "^"   { yylval.node = createNode(NTPOW); return(POW); }
-"="  { yylval.node = createNode(NTAFF); return(AFF); }
+"="   { yylval.node = createNode(NTAFF); return(AFF); }
 
 
 
 
- 
- 
+
+
 
 ";"    { return(COLON); }
 
