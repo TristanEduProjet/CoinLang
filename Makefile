@@ -30,7 +30,7 @@ all: minicoin
 %.l.o: %.scanner.c
 	$(COMPILE.c) $(OUTPUT_OPTION) $<
 
-minicoin : minicoin.l.o minicoin.y.o minicoin_tree.o minicoin_eval.o unorderedmap.o
+minicoin : minicoin.y.o minicoin.l.o minicoin_tree.o minicoin_eval.o unorderedmap.o
 	$(CXX) $(LOADLIBES) $(LDLIBS) $(OUTPUT_OPTION) $^
 
 debug: CFLAGS += $(DBGFLAGS)

@@ -6,7 +6,7 @@
 int printDepth = 0;
 int funcDepth = 0;
 
-double evalExpr(Node *node) {
+double evalExpr(const Node *node) {
 	switch(node->type) {
         case NTEMPTY:  return 0.0;
         case NTNUM: return node->val;
@@ -23,13 +23,13 @@ double evalExpr(Node *node) {
 	};
 }
 
-void evalInst(Node* node) {
+void evalInst(const Node* node) {
 	switch(node->type) {
-        case NTEMPTY: return;
+        case NTEMPTY: break;
         case NTINSTLIST:
             evalInst(node->children[0]);
             evalInst(node->children[1]);
-            return;
+            break;
         case NTNUM:
         case NTPLUS:
         case NTMIN:
@@ -37,13 +37,13 @@ void evalInst(Node* node) {
         case NTDIV:
         case NTPOW:
             printf("%f\n", evalExpr(node));
-            return;
+            break;
         default:
             fprintf(stderr, "Error in evalInst ... Wrong node type: %s\n", node2String(node));
             exit(EXIT_FAILURE);
 	};
 }
 
-void eval(Node *node) {
+inline void eval(const Node *node) {
 	evalInst(node);
 }

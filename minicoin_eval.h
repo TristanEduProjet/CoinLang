@@ -1,6 +1,6 @@
 #ifndef MINIPSEUDEVAL
 #define MINIPSEUDEVAL
 
-double eval(Node *node);
+inline void eval(const Node *node);
 
 #endif

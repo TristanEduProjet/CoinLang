@@ -26,12 +26,12 @@ typedef struct Node {
 	};
 } Node;
 
-Node* createNode(int type);
+Node* createNode(const int type);
 
-Node* nodeChildren(Node* father, Node *child1, Node *child2);
+Node* nodeChildren(Node* father, const Node *child1, const Node *child2);
 
-const char* node2String(Node *node);
+const char* node2String(const Node *node);
 
-void printGraph(Node *root);
+inline void printGraph(const Node *root);
 
 #endif
