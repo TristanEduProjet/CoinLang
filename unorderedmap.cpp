@@ -10,7 +10,7 @@ string conv_char_to_str(const char *cstr) {
     if(cstr == NULL) {
         cerr << "Erreur conv(char*, str) : input NULL" << endl;
         exit(EXIT_FAILURE);
-        return ""; //juste pour compilateur
+        //return ""; //juste pour compilateur
     } else {
         return string(cstr);
     }
@@ -39,6 +39,14 @@ extern "C" {
         else
             return NULL;
         */
+    }
+
+    HashMap* HashMap_new() {
+        return new unordered_map<string, string>();
+    }
+
+    void HashMap_free(const HashMap *hm) {
+        delete hm;
     }
 
 }

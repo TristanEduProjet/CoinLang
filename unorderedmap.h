@@ -22,6 +22,10 @@ bool HashMap_keyExist(const HashMap *hashmap, const char *key);
 
 const char* HashMap_get(/*const*/ HashMap *hashmap, const char *key);
 
+HashMap* HashMap_new();
+
+void HashMap_free(const HashMap *hm);
+
 #ifdef __cplusplus
 }
 #endif

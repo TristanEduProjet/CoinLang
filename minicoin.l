@@ -13,7 +13,7 @@ empty [ \t]+
 num   [0-9]
 int   {num}+
 exp   [eE][+-]?{int}
-var   [a-z]+
+var   [a-zA-Z_]+
 real  {int}("."{int})?{exp}?
 
 %%
@@ -26,7 +26,7 @@ real  {int}("."{int})?{exp}?
 
 {var} {
     yylval.node = createNode(NTVAR);
-    yylval.node->var = (char*)_strdup(yytext);
+    yylval.node->var = (char*)strdup(yytext);
     return(VAR);
 }
 

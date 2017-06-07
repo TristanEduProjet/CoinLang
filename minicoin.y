@@ -5,11 +5,13 @@
 #include <string.h>
 #include "minicoin_tree.h"
 #include "minicoin_eval.h"
+#include "unorderedmap.h"
 
-extern int  yyparse();
+extern int yyparse();
 extern FILE *yyin;
 
-Node root;
+static Node root;
+extern const HashMap *variables;
 
 void exec(const Node *node);
 void yyerror(const char *s);
@@ -28,12 +30,11 @@ void yyerror(const char *s);
 %type  <node> Inst
 %type  <node> Expr
 
-%left  OR
-%left  AND
+%left  OR AND
 %left  EQ NEQ
 %left  GT LT GET LET
-%left  PLUS  MIN
-%left  MULT  DIV
+%left  PLUS MIN
+%left  MULT DIV
 %left  NEG NOT
 %right POW
 
@@ -41,7 +42,7 @@ void yyerror(const char *s);
 %%
 
 Input:
-               { /* Nothing ... */ }
+    /* Nothing ... */
   | Line Input { /* Nothing ... */ }
 
 Line:
@@ -81,19 +82,22 @@ void yyerror(const char *s) {
     printf("%s\n", s);
 }
 
-int main(int arc, char **argv) {
-    if ((arc == 3) and (strcmp(argv[1], "-f") == 0)) {
-        /*const*/ FILE *fp = fopen(argv[2], "r");
-        if(fp == NULL) {
-            fprintf(stderr, "Impossible d'ouvrir le fichier à executer.\n");
+int main(const int argc, const char *argv[]) {
+    if(variables == NULL)
+        fprintf(stderr, "Erreur initialisation interne\n");
+    else
+        if ((argc == 3) and (strcmp(argv[1], "-f") == 0)) {
+            /*const*/ FILE *fp = fopen(argv[2], "r");
+            if(fp == NULL) {
+                fprintf(stderr, "Impossible d'ouvrir le fichier à executer.\n");
+            } else {
+                yyin = fp;
+                yyparse();
+                fclose(fp);
+                return EXIT_SUCCESS;
+            }
         } else {
-            yyin = fp;
-            yyparse();
-            fclose(fp);
-            return EXIT_SUCCESS;
+            fprintf(stderr, "Arguments invalides.\n");
         }
-    } else {
-        fprintf(stderr, "Arguments invalides.\n");
-    }
     return EXIT_FAILURE;
 }
