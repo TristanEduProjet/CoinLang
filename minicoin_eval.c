@@ -44,6 +44,6 @@ void evalInst(const Node* node) {
 	};
 }
 
-inline void eval(const Node *node) {
+void eval(const Node *node) {
 	evalInst(node);
 }

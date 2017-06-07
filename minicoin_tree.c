@@ -80,6 +80,6 @@ void printGraphRec(const Node *node, const int depth, const int fdepth) {
 	}
 }
 
-inline void printGraph(const Node *root) {
+void printGraph(const Node *root) {
 	printGraphRecu(root, 0);
 }

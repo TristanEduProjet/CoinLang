@@ -32,6 +32,6 @@ Node* nodeChildren(Node* father, const Node *child1, const Node *child2);
 
 const char* node2String(const Node *node);
 
-inline void printGraph(const Node *root);
+void printGraph(const Node *root);
 
 #endif
