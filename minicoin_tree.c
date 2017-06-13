@@ -23,21 +23,21 @@ Node* nodeChildren(Node* father, const Node *child1, const Node *child2) {
 const char* node2String(const Node *node) {
 	char *res;
 	switch ( node->type ) {
-        case NTEMPTY:    return "NTEMPTY";
+        case NTEMPTY:    return "Fin";
         case NTINSTLIST: return "NTINSTLIST";
 
         case NTNUM:
             res = (char *)malloc(sizeof(char) * 32);
-            sprintf(res, "NTNUM -> %f", node->val);
+            sprintf(res, "Valeur -> %f", node->val);
             return res;
 
-        case NTPLUS:  return "NTPLUS";
-        case NTMIN:   return "NTMIN";
-        case NTMULT:  return "NTMULT";
-        case NTDIV:   return "NTDIV";
-        case NTPOW:   return "NTPOW";
+        case NTPLUS:  return "Addition";
+        case NTMIN:   return "Soustraction";
+        case NTMULT:  return "Multiplication";
+        case NTDIV:   return "Division";
+        case NTPOW:   return "Puissance";
 
-        default: return "UNK";
+        default: return "Inconnue";
 	};
 }
 
