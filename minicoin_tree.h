@@ -1,5 +1,8 @@
 #ifndef MINICOIN_TREE
 #define MINICOIN_TREE
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 enum NodeType {
 	NTEMPTY = 0,
@@ -34,4 +37,7 @@ const char* node2String(const Node *node);
 
 void printGraph(const Node *root);
 
+#ifdef __cplusplus
+}
+#endif
 #endif

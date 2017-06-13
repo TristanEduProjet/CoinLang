@@ -3,6 +3,7 @@
 #include <string.h>
 #include <iso646.h>
 #include "extern.h"
+#include "minicoin_eval.h"
 
 extern int yyparse();
 extern FILE *yyin;
@@ -16,10 +17,21 @@ int main(const int argc, const char *argv[]) {
             if(fp == NULL) {
                 fprintf(stderr, "Impossible d'ouvrir le fichier à executer.\n");
             } else {
+                Node *root = NULL;
                 yyin = fp;
-                yyparse();
+                printf(">< Parsing :\n");
+                const int res = yyparse(&root);
                 fclose(fp);
-                return EXIT_SUCCESS;
+                if(res == 0) {
+                    printf("\n>< Instructions :\n");
+                    printGraph(root);
+                    printf("\n>< Execution du programme :\n");
+                    eval(root);
+                    return EXIT_SUCCESS;
+                } else {
+                    fprintf(stderr, "yyparse() return code %d\n", res);
+                    return res;
+                }
             }
         } else {
             fprintf(stderr, "Arguments invalides.\n");

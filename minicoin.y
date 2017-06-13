@@ -8,10 +8,8 @@
 #include "unorderedmap.h"
 #include "extern.h"
 
-static Node root;
-
 inline void exec(const Node *node);
-inline void yyerror(const char *s);
+inline void yyerror(const Node **r, const char *s);
 %}
 
 %union {
@@ -35,6 +33,7 @@ inline void yyerror(const char *s);
 %left  NEG NOT
 %right POW
 
+%parse-param {const Node **root}
 %start Input
 %%
 
@@ -44,7 +43,7 @@ Input:
 
 Line:
     EOL {  }
-  | Instlist EOL { exec($1); }
+  | Instlist EOL { *root = $1; }
   ;
 
 Instlist:
@@ -70,11 +69,6 @@ Expr:
 
 %%
 
-inline void exec(const Node *node) {
-    printGraph(node);
-    eval(node);
-}
-
-inline void yyerror(const char *s) {
+inline void yyerror(const Node **r, const char *s) {
     fprintf(stderr, "%s\n", s);
 }
