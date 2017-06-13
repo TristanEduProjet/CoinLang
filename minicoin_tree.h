@@ -14,7 +14,7 @@ enum NodeType {
 	NTDIV   = 324,
 	NTPOW   = 325,
 	NTEQ = 326,
-	NTAFF = 32
+	NTAFF = 327
 };
 
 typedef struct Node {
