@@ -19,7 +19,7 @@ inline void yyerror(const Node **r, const char *s);
 %token  <node> NUM VAR
 %token  <node> PLUS MIN MULT DIV POW
 %token  OP_PAR CL_PAR AFF
-%token  COLON EOL
+%token  COLON END
 
 %type  <node> Instlist
 %type  <node> Inst
@@ -42,8 +42,8 @@ Input:
   | Line Input { /* Nothing ... */ }
 
 Line:
-    EOL {  }
-  | Instlist EOL { *root = $1; }
+    END { YYACCEPT; }
+  | Instlist END { *root = $1; }
   ;
 
 Instlist:

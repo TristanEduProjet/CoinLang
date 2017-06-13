@@ -8,12 +8,12 @@
 
 %}
 
-empty [ \t]+
+empty [ \t\n]+
 
 num   [0-9]
 int   {num}+
 exp   [eE][+-]?{int}
-var   [a-zA-Z_]+
+var   [a-zA-Z_][a-zA-Z0-9_]+
 real  {int}("."{int})?{exp}?
 
 %%
@@ -45,4 +45,4 @@ real  {int}("."{int})?{exp}?
 
 ";"   { return(COLON); }
 
-"\n"  { return(EOL); }
+<<EOF>>  { return(END); }
