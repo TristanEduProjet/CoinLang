@@ -5,8 +5,6 @@
 #include <string.h>
 #include "minicoin_tree.h"
 #include "minicoin_eval.h"
-#include "unorderedmap.h"
-#include "extern.h"
 
 inline void exec(const Node *node);
 inline void yyerror(const Node **r, const char *s);
