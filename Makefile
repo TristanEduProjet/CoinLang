@@ -1,5 +1,5 @@
 CC = gcc
-CPPFLAGS = -Wall -Wextra -MD -MP
+CPPFLAGS = -Wall -Wextra -MD -MP $(patsubst %,-I%,$(dir $(wildcard ./extsub/*/)))
 CXXFLAGS = -std=c++11
 LEX = flex
 LEX.l = $(LEX) $(LFLAGS)
@@ -10,7 +10,7 @@ DBGFLAGS = -g3 -ggdb3 -Og -DDEBUG -D_DEBUG
 RLSFLAGS = -O3 -DNDEBUG -D_NDEBUG
 
 
-all: minicoin
+all: libraries minicoin
 
 %.d: %.c
 	$(CC) -MM -MD -o $@ $<
@@ -24,14 +24,17 @@ all: minicoin
 %.y.o: %.parser.c
 	$(COMPILE.c) $(OUTPUT_OPTION) $<
 
-%.scanner.c: %.l
+%.scanner.c %.scanner.h: %.l
 	$(LEX.l) -o$@ $<
 
 %.l.o: %.scanner.c
 	$(COMPILE.c) $(OUTPUT_OPTION) $<
 
-minicoin : main.o minicoin.y.o minicoin.l.o minicoin_tree.o minicoin_eval.o unorderedmap.o
-	$(CXX) $(LOADLIBES) $(LDLIBS) $(OUTPUT_OPTION) $^
+minicoin : libraries main.o minicoin.y.o minicoin.l.o minicoin_tree.o minicoin_eval.o unorderedmap.o
+	$(CXX) $(LOADLIBES) $(LDLIBS) $(OUTPUT_OPTION) $(TARGET_ARCH) $(filter-out $<,$^)
+
+libraries:
+	$(MAKE) -C extsub
 
 debug: CFLAGS += $(DBGFLAGS)
 debug: CXXFLAGS += $(DBGFLAGS)
@@ -48,7 +51,7 @@ release: all
 # pull in dependency info for *existing* .o/.d files
 -include $(wildcard *.d)
 
-.PHONY: all debug release clean distclean
+.PHONY: all libraries debug release clean distclean
 
 #supprime les fichiers temporaires de la compilation
 clean :
@@ -56,8 +59,10 @@ clean :
 	$(RM) *.scanner.*
 	$(RM) *.parser.*
 	$(RM) *.d
+	$(MAKE) -C extsub clean
 
 #supprime tout
 distclean : clean
 	$(RM) minicoin
 	$(RM) *~
+	$(MAKE) -C extsub distclean
