@@ -1,11 +1,16 @@
+EXTLIBS = $(sort $(dir $(wildcard extsub/*/)))
 CC = gcc
-CPPFLAGS = -Wall -Wextra -MD -MP $(patsubst %,-I%,$(dir $(wildcard ./extsub/*/)))
+GIT=git
+CPPFLAGS = -Wall -Wextra -MD -MP -DVERSION=\"$(shell $(GIT) describe --abbrev=4 --dirty --always --tags)\" $(patsubst %,-I%,$(EXTLIBS))
 CXXFLAGS = -std=c++11
 LEX = flex
 LEX.l = $(LEX) $(LFLAGS)
 YACC = bison
 YFLAGS = --warnings=all -d
 #LD=gcc
+LDLIBS = -largtable3
+LDFLAGS = $(patsubst %,-L%,$(EXTLIBS))
+#LDFLAGS = -Lextsub/argtable3
 DBGFLAGS = -g3 -ggdb3 -Og -DDEBUG -D_DEBUG
 RLSFLAGS = -O3 -DNDEBUG -D_NDEBUG
 
@@ -31,7 +36,7 @@ all: libraries minicoin
 	$(COMPILE.c) $(OUTPUT_OPTION) $<
 
 minicoin : libraries main.o minicoin.y.o minicoin.l.o minicoin_tree.o minicoin_eval.o unorderedmap.o
-	$(CXX) $(LOADLIBES) $(LDLIBS) $(OUTPUT_OPTION) $(TARGET_ARCH) $(filter-out $<,$^)
+	$(CXX) $(OUTPUT_OPTION) $(TARGET_ARCH) $(filter-out $<,$^) $(LDFLAGS) $(LOADLIBES) $(LDLIBS)
 
 libraries:
 	$(MAKE) -C extsub
