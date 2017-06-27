@@ -1,5 +1,8 @@
 #ifndef MINICOIN_INST_H_INCLUDED
 #define MINICOIN_INST_H_INCLUDED
+
+#include <stdbool.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -16,6 +19,8 @@ typedef struct Instr Instr;
 
 void evalInstr(const Instr *instr);
 void printInstr(const Instr *instr);
+void freeInstr(Instr **instr);
+bool verifInstr(const Instr *instr);
 
 
 typedef struct InstrList InstrList;

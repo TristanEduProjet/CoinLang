@@ -2,13 +2,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <iso646.h>
-//#include <unistd.h> //getpid
+#include <unistd.h> //process.h
 #include <argtable3.h>
 #include "minicoin_inst.h"
 #include "unorderedmap.h"
-//#include "list.h"
 
-//#define VERSION {unknow} //define in Makefile
+#ifndef VERSION
+#define VERSION {unknow} //define in Makefile
+#endif // VERSION
 
 extern int yyparse();
 extern FILE *yyin;
@@ -18,54 +19,20 @@ typedef struct Param {
     bool verbose;
 } Param;
 
-inline Param parse_args(const int argc, const char *argv[]);
-inline Instr* parse_yy(const Param params);
-inline void exec_prog(const Instr *root);
-inline void free_params(const Param param);
+static inline Param parse_args(const int argc, const char *argv[]);
+static inline Instr* parse_yy(const Param params);
+static inline void exec_prog(const Instr *root);
+static inline void free_params(const Param param);
 
 int main(const int argc, const char *argv[]) {
-	/*klist_t(32) *kl;
-	kliter_t(32) *p;
-	kl = kl_init(32);
-	*kl_pushp(32, kl) = 1;
-	*kl_pushp(32, kl) = 5;
-	*kl_pushp(32, kl) = 10;
-	//kl_shift(32, kl, 0);
-	int tmp;
-	kl_shift(32, kl, &tmp);
-	printf("-- %d\n", tmp);
-	for (p = kl_begin(kl); p != kl_end(kl); p = kl_next(p))
-		printf("%d\n", kl_val(p));
-	kl_destroy(32, kl);
-    exit(EXIT_SUCCESS);*/
-    /*List *l = List_new();
-    Instr *i;
-    double d = 5.0;
-    for(i=List_getFisrt(l) ; i not_eq NULL ; i=List_getNext(l))
-        printf("l -> %x\n", i);
-    putchar('\n');
-    List_insertBegin(l, (Instr*)newInstrExpr(DT_REAL, &d));
-    for(i=List_getFisrt(l) ; i not_eq NULL ; i=List_getNext(l))
-        printf("l -> %x\n", i);
-    putchar('\n');
-    List_insertEnd(l, (Instr*)newInstrExpr(DT_STRING, NULL));
-    for(i=List_getFisrt(l) ; i not_eq NULL ; i=List_getNext(l))
-        printf("l -> %x\n", i);
-    putchar('\n');
-    List_insertEnd(l, NULL);
-    for(i=List_getFisrt(l) ; i not_eq NULL ; i=List_getNext(l))
-        printf("l -> %x\n", i);
-    putchar('\n');
-    exit(EXIT_SUCCESS);*/
     printf("Process PID %d\n", getpid());
-    system("pause");
     const Param params = parse_args(argc, argv);
     const Instr *root = parse_yy(params);
     if(root != NULL) {
         printf("\n>< Instructions :\n");
         printInstr(root);
         exec_prog(root);
-        //TODO: free instructs + list
+        freeInstr(&root);
         free_params(params);
         return EXIT_SUCCESS;
     } else
@@ -76,7 +43,7 @@ int main(const int argc, const char *argv[]) {
  * http://www.argtable.org/tutorial/
  * https://linux.die.net/man/3/argtable
  */
-inline Param parse_args(const int argc, const char *argv[]) {
+static inline Param parse_args(const int argc, const char *argv[]) {
     struct arg_lit *help, *version, *level, *verb;
     struct arg_file *in, *out;
     struct arg_end *end;
@@ -125,7 +92,7 @@ inline Param parse_args(const int argc, const char *argv[]) {
     }
 }
 
-inline Instr* parse_yy(const Param params) {
+static inline Instr* parse_yy(const Param params) {
     printf("\n>- Preparation du parser :\n");
     /*const*/ FILE *fp = fopen(params.file_input, "r");
     if(fp == NULL) {
@@ -146,19 +113,24 @@ inline Instr* parse_yy(const Param params) {
     }
 }
 
-inline void exec_prog(const Instr *root) {
+static inline void exec_prog(const Instr *root) {
     printf("\n>- Preparation du programme :\n");
-    const HashMap *variables = HashMap_new();
-    if(variables == NULL) {
-        fprintf(stderr, "Erreur initialisation interne\n");
+    if(not verifInstr(root)) {
+        fprintf(stderr, "Erreur vérification interne\n");
         exit(EXIT_FAILURE);
     } else {
-        printf("\n>< Execution du programme :\n");
-        evalInstr(root);
-        HashMap_free(variables);
+        const HashMap *variables = HashMap_new();
+        if(variables == NULL) {
+            fprintf(stderr, "Erreur initialisation interne\n");
+            exit(EXIT_FAILURE);
+        } else {
+            printf("\n>< Execution du programme :\n");
+            evalInstr(root);
+            HashMap_free(variables);
+        }
     }
 }
 
-inline void free_params(const Param param) {
+static inline void free_params(const Param param) {
     free(param.file_input);
 }

@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "minicoin.parser.h"
-//# include "minicoin_tree.h"
 
 %}
 

@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iso646.h>
-//#include "list.h"
 #include <klist.h>
 
 #define __list_free(x)
@@ -13,15 +12,21 @@ KLIST_INIT(312, Instr_p, __list_free)
 #define CHARTAB '|'
 
 void printMarge(const unsigned int sublvl);
+//static inline bool CheckInstrType(const Instr *instr, const InstrType type);
+#define CheckInstrType(instr, ctype) if(instr->type != ctype) {fprintf(stderr, "Erreur %s(%p) n'est pas %s (%d != %d)\n", __func__, instr, #ctype, instr->type, ctype); return false;}
 #define MallocVerif(type, name) type *name = malloc(sizeof(type)); if(name == NULL) { fputs("Erreur malloc(" #type ")", stderr); exit(EXIT_FAILURE); }
 #define internPrint(var, nbsp) (var)->print(var, nbsp)
-#define internFree(var) (var)->free(var)
+#define internCall(var, fn) ((var)->fn(var))
+#define internFree(var) internCall(var, free)
+#define internVerif(var) internCall(var, check)
 
 struct Instr {
-    InstrType type;
+    InstrType type; //Type d'instruction
+    DataType retour; //Type data retournée par instruction
     void (*eval)(const Instr*);
     void (*free)(/*const*/ Instr*);
     void (*print)(const Instr*, const unsigned int);
+    bool (*check)(const Instr*); //true = erreur, false = ok
 };
 
 void evalInstr(const Instr *instr) {
@@ -30,6 +35,15 @@ void evalInstr(const Instr *instr) {
 
 void printInstr(const Instr *instr) {
     internPrint(instr, 0);
+}
+
+bool verifInstr(const Instr *instr /*, char *buf_msg*/) {
+    return instr->check(instr);
+}
+
+void freeInstr(Instr **instr) {
+    internFree(*instr);
+    *instr = NULL;
 }
 
 
@@ -45,7 +59,18 @@ void printInstrList(const Instr *instr, const unsigned int nbsp) {
     kliter_t(312) *p;
     //Instr *i;
     for(p = kl_begin(/*list->*/lst); p != kl_end(/*list->*/lst); p = kl_next(p))
-		internPrint(kl_val(p), nbsp+1);
+        internPrint(kl_val(p), nbsp+1);
+}
+
+bool verifInstrList(const Instr *instr) {
+    CheckInstrType(instr, IT_LIST);
+    bool res = false;
+    const /*List*/klist_t(312) *lst = ((InstrList*) instr)->lst;
+    kliter_t(312) *p;
+    //Instr *i;
+    for(p = kl_begin(lst); (not res) and (p != kl_end(lst)); p = kl_next(p))
+        res or_eq internVerif(kl_val(p));
+    return res;
 }
 
 void evalInstrList(const Instr *instr) {
@@ -59,7 +84,7 @@ void freeInstrList(/*const*/ Instr *instr) {
     const InstrList *list = (InstrList*) instr;
     kliter_t(312) *p;
     for(p = kl_begin(list->lst); p != kl_end(list->lst); p = kl_next(p))
-		internFree(kl_val(p));
+        internFree(kl_val(p));
     kl_destroy(312, list->lst);
     free(/*instr*/ list);
 }
@@ -69,6 +94,7 @@ InstrList* newInstrList() {
     list->eval = evalInstrList;
     list->print = printInstrList;
     list->free = freeInstrList;
+    list->check = verifInstrList;
     list->type = IT_LIST;
     //list->list = List_new();
     list->lst = kl_init(312);
@@ -111,6 +137,11 @@ void printInstrExpr(const Instr *instr, const unsigned int nbsp) {
     }
 }
 
+bool verifInstrExpr(const Instr *instr) {
+    CheckInstrType(instr, IT_EXPR);
+    return true;
+}
+
 void evalInstrExpr(const Instr *instr) {
     ;
 }
@@ -128,6 +159,7 @@ InstrExpr* newInstrExpr(const DataType type, void *data) {
     expr->eval = evalInstrExpr;
     expr->print = printInstrExpr;
     expr->free = freeInstrExpr;
+    expr->check = verifInstrExpr;
     expr->dtype = type;
     switch(type) {
         case DT_REAL:
@@ -157,6 +189,12 @@ void printInstrCalc(const Instr *instr, const unsigned int nbsp) {
     internPrint(calc->i2, nbsp+1);
 }
 
+bool verifInstrCalc(const Instr *instr) {
+    CheckInstrType(instr, IT_CALC);
+    const InstrCalc *clc = (InstrCalc*) instr;
+    return (clc->i1 not_eq NULL) or (internVerif(clc->i1)) or (clc->i2 not_eq NULL) or (internVerif(clc->i2)) or (clc->i1->type == clc->i2->type);
+}
+
 void evalInstrCalc(const Instr *instr) {
     ;
 }
@@ -173,6 +211,7 @@ InstrCalc* newInstrCalc(const OperType type, const Instr *i1, const Instr *i2) {
     calc->eval = evalInstrCalc;
     calc->print = printInstrCalc;
     calc->free = freeInstrCalc;
+    calc->check = verifInstrCalc;
     calc->type = IT_CALC;
     calc->otype = type;
     calc->i1 = i1;
@@ -195,6 +234,12 @@ void printInstrAffect(const Instr *instr, const unsigned int nbsp) {
     internPrint(aff->expr, nbsp+2);
 }
 
+bool verifInstrAffect(const Instr *instr) {
+    CheckInstrType(instr, IT_AFFECT);
+    const InstrAffect *affct = (InstrAffect*) instr;
+    return (affct->var not_eq NULL) or (affct->expr not_eq NULL) or (internVerif(affct->expr));
+}
+
 void evalInstrAffect(const Instr *instr) {
     ;
 }
@@ -211,6 +256,7 @@ InstrAffect* newInstrAffect(const char *varname, const Instr *value) {
     aff->eval = evalInstrAffect;
     aff->print = printInstrAffect;
     aff->free = freeInstrAffect;
+    aff->check = verifInstrAffect;
     aff->type = IT_AFFECT;
     aff->var = varname;
     aff->expr = value;

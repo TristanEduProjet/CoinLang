@@ -3,9 +3,6 @@
 #include <stdlib.h>
 #include <iso646.h>
 #include <string.h>
-//#include "minicoin_tree.h"
-//#include "minicoin_eval.h"
-//#include "list.h"
 #include "minicoin_inst.h"
 
 inline void yyerror(const Instr **r, const char *s);
@@ -16,11 +13,9 @@ inline void yyerror(const Instr **r, const char *s);
 }
 
 %union {
-    //struct Node *node;
     char *str;
     double real;
     Instr *instr;
-    //List *lst;
 }
 
 %token  <real> NUM
@@ -43,7 +38,6 @@ inline void yyerror(const Instr **r, const char *s);
 
 %parse-param {const Instr **root}
 %start Input
-%verbose
 %%
 
 Input:
@@ -62,7 +56,7 @@ Instlist:
 
 Inst:
     Expr COLON { $$ = $1; }
-  | VAR AFF Expr COLON {/*printf("variable : %s\n", $1->var);*/ $$ = (Instr*) newInstrAffect($1, $3);}
+  | VAR AFF Expr COLON {$$ = (Instr*) newInstrAffect($1, $3);}
   ;
 
 Expr:

@@ -4,8 +4,9 @@ GIT = git
 CPPFLAGS = -Wall -Wextra -MD -MP -DVERSION=\"$(shell $(GIT) describe --abbrev=4 --dirty --always --tags)\" $(patsubst %,-I%,$(EXTLIBS))
 CXXFLAGS = -std=c++11
 ifeq ($(CC), gcc)
-	CFLAGS += -fms-extensions
+	CFLAGS += -fms-extensions -std=gnu99
 else
+	CFLAGS += -std=c99
 	ifeq ($(CC), clang)
 		CFLAGS += -fms-extensions -Wno-microsoft
 		#-Wmicrosoft -Wc++11-extensions -Wno-long-long
@@ -45,7 +46,7 @@ all: libraries minicoin
 %.l.o: %.scanner.c
 	$(COMPILE.c) $(OUTPUT_OPTION) $<
 
-minicoin : libraries main.o minicoin.y.o minicoin.l.o minicoin_tree.o minicoin_eval.o minicoin_inst.o unorderedmap.o list.o
+minicoin : libraries main.o minicoin.y.o minicoin.l.o minicoin_inst.o unorderedmap.o
 	$(CXX) $(OUTPUT_OPTION) $(TARGET_ARCH) $(filter-out $<,$^) $(LDFLAGS) $(LOADLIBES) $(LDLIBS)
 
 libraries:
@@ -92,12 +93,12 @@ clean :
 	$(RM) *.d
 	$(RM) *.scanner.*
 	$(RM) *.parser.*
-	$(RM) *.png
-	$(RM) *.xhtml
 	$(MAKE) -C extsub clean
 
 #supprime tout
 distclean : clean
 	$(RM) minicoin
+	$(RM) *.png
+	$(RM) *.xhtml
 	$(RM) *~
 	$(MAKE) -C extsub distclean
