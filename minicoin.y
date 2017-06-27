@@ -3,25 +3,35 @@
 #include <stdlib.h>
 #include <iso646.h>
 #include <string.h>
-#include "minicoin_tree.h"
-#include "minicoin_eval.h"
+//#include "minicoin_tree.h"
+//#include "minicoin_eval.h"
+//#include "list.h"
+#include "minicoin_inst.h"
 
-inline void exec(const Node *node);
-inline void yyerror(const Node **r, const char *s);
+inline void yyerror(const Instr **r, const char *s);
 %}
 
-%union {
-    struct Node *node;
+%code requires {
+#include "minicoin_inst.h"
 }
 
-%token  <node> NUM VAR
-%token  <node> PLUS MIN MULT DIV POW
+%union {
+    //struct Node *node;
+    char *str;
+    double real;
+    Instr *instr;
+    //List *lst;
+}
+
+%token  <real> NUM
+%token  <str> VAR
+%token  PLUS MIN MULT DIV POW
 %token  OP_PAR CL_PAR AFF
 %token  COLON END
 
-%type  <node> Instlist
-%type  <node> Inst
-%type  <node> Expr
+%type  <instr> Instlist
+%type  <instr> Inst
+%type  <instr> Expr
 
 %left  OR AND
 %left  EQ NEQ
@@ -31,8 +41,9 @@ inline void yyerror(const Node **r, const char *s);
 %left  NEG NOT
 %right POW
 
-%parse-param {const Node **root}
+%parse-param {const Instr **root}
 %start Input
+%verbose
 %%
 
 Input:
@@ -45,28 +56,28 @@ Line:
   ;
 
 Instlist:
-    Inst { $$ = nodeChildren(createNode(NTINSTLIST), $1, createNode(NTEMPTY)); }
-  | Instlist Inst { $$ = nodeChildren(createNode(NTINSTLIST), $1, $2); }
+    Inst { $$ = (Instr*) newInstrList(); addInstrList((InstrList*)$$, $1); }
+  | Instlist Inst { $$ = $1; addInstrList((InstrList*)$$, $2); }
   ;
 
 Inst:
     Expr COLON { $$ = $1; }
-  | VAR AFF Expr COLON {printf("variable : %s\n", $1->var); $$ = $3;}
+  | VAR AFF Expr COLON {/*printf("variable : %s\n", $1->var);*/ $$ = (Instr*) newInstrAffect($1, $3);}
   ;
 
 Expr:
-    NUM     { $$ = $1; }
-  | Expr PLUS Expr     { $$ = nodeChildren($2, $1, $3); }
-  | Expr MIN Expr      { $$ = nodeChildren($2, $1, $3); }
-  | Expr MULT Expr     { $$ = nodeChildren($2, $1, $3); }
-  | Expr DIV Expr      { $$ = nodeChildren($2, $1, $3); }
-  | MIN Expr %prec NEG { $$ = nodeChildren($1, createNode(NTEMPTY), $2); }
-  | Expr POW Expr      { $$ = nodeChildren($2, $1, $3); }
+    NUM     { $$ = (Instr*) newInstrExpr(DT_REAL, &$1); }
+  | Expr PLUS Expr     { $$ = (Instr*) newInstrCalc(OP_PLUS, $1, $3); }
+  | Expr MIN Expr      { $$ = (Instr*) newInstrCalc(OP_MIN, $1, $3); }
+  | Expr MULT Expr     { $$ = (Instr*) newInstrCalc(OP_MULT, $1, $3); }
+  | Expr DIV Expr      { $$ = (Instr*) newInstrCalc(OP_DIV, $1, $3); }
+  | MIN Expr %prec NEG { $$ = (Instr*) newInstrCalc(OP_MIN, NULL, $2); /* ? */ }
+  | Expr POW Expr      { $$ = (Instr*) newInstrCalc(OP_POW, $1, $3); }
   | OP_PAR Expr CL_PAR { $$ = $2; }
   ;
 
 %%
 
-inline void yyerror(const Node **r, const char *s) {
+inline void yyerror(const Instr **l, const char *s) {
     fprintf(stderr, "%s\n", s);
 }

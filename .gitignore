@@ -30,6 +30,11 @@ C / C++ #
 *.gch
 *.pch
 
+# Precompiled Sources
+*.i
+*.ii
+*.s
+
 # Libraries
 *.lib
 *.a

@@ -54,24 +54,57 @@ git submodule update --init --recursive
 * affectation des variables "simples" à un caractère
 * reconnaissance des types :
     * nombres réels (flottant)
+    * chaine de caractères
 * calcul numérique de nombres
+* remplacement de l'arbre stockant le programme généré par Yacc par une liste chainée modulaire 
 
 
 # Fonctionnalités à venir
 
 * gestion des variables _(nom complet)_
 * reconnaissance de types supplémentaires :
-    * chaine de caractères
     * boolean
+    * nombres entiers
 * expression booléennes
+* instructions de base :
+    * `if` et `else`
+    * `if` ternaires
+    * `for`
+    * `while`
+    * `switch`
 * notion de "bloc" d'instruction(s) pour de futures fonctionnalités
-* ré-implémentation de l'arbre stockant le programme généré par Yacc
 * gestion basique de l'output
+* vérification de la conformité des types (entre variables et fonctions)
+
+
+# Fonctionnement interne
+
+L’exécution du se sépare en 3 phases majeures :
+  - Lecture et reconnaissance des paramètres
+  - **Lecture du fichier source**
+  - Affichage de la structure obtenue
+  - **Vérification du programme obtenu**
+  - **Exécution du programme**
+
+## Lecture / Parser
+Le fichier source est traité par Yacc qui fait appel à Lex pour lire le fichier. Ce dernier converti le fichier en *token* reconnaissable par Yacc qui vérifie et applique la grammaire du langage.
+
+## Structure du programme généré
+Le programme du script utilisateur est stockée sous une forme modulaire.  
+Cela permet une gestion dynamique et plus souple du programme dans sa globalité.
+
+Chaque instruction se calque sur une interface commune et définie comme elle doit être lue, évaluée, etc...  
+Cela concerne (au niveau le plus abstrait) :
+  - La vérification
+  - L'affichage (_dump_)
+  - L'exécution
+
+_Cela permettra plus tard la mise en place d'optimisation plus facile._
 
 
 # Dépendances
 ## Lex & Yacc
-Le compilateur est construit à l'aide de [Flex](https://fr.wikipedia.org/wiki/Flex_(logiciel)) et [Bison](https://fr.wikipedia.org/wiki/GNU_Bison), forks récents de [Lex](https://fr.wikipedia.org/wiki/Lex_(logiciel)) et [Yacc](https://fr.wikipedia.org/wiki/Yacc_(logiciel)).s
+Le compilateur est construit à l'aide de [Flex](https://fr.wikipedia.org/wiki/Flex_(logiciel)) et [Bison](https://fr.wikipedia.org/wiki/GNU_Bison), forks récents de [Lex](https://fr.wikipedia.org/wiki/Lex_(logiciel)) et [Yacc](https://fr.wikipedia.org/wiki/Yacc_(logiciel)).
 
 ## Modules Git
 Certaines dépendances de ce dépôt sont des modules Git (un lien vers des dépôts extérieures).  
@@ -93,3 +126,14 @@ Pour plus de détail, consultez le wiki.
 ## [Argtable3](https://github.com/argtable/argtable3 "argtable/argtable3")
 Librairie pour gérer les arguments du programme.  
 En remplacement à **[Getopt](https://www.gnu.org/software/libc/manual/html_node/Getopt.html "GetOpt")** de GNU qui est plus long.
+
+## [SGLIB](https://github.com/stefanct/sglib "/sglib")
+_ **A Simple Generic Library for C** _
+[Website](http://sglib.sourceforge.net/) [Documentation](http://sglib.sourceforge.net/doc/index.html#examples) [FreeCode](http://freecode.com/projects/sglib)
+
+Librairie simple & générique de structure de base en C.  
+Sa particularité est de n'utilisée que les macro (ou préprocesseur), et s'adapte donc au type contenu.
+
+## [Klib](https://github.com/attractivechaos/klib "attractivechaos/klib")
+Dans la même idée que SGLib, une librairie très légère reposant sur les macro pour de bonne performances et une adaptation aux types.  
+Avec quelques extensions qui ne nous sont pas nécessaire ici.

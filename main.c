@@ -2,9 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <iso646.h>
+//#include <unistd.h> //getpid
 #include <argtable3.h>
-#include "minicoin_eval.h"
+#include "minicoin_inst.h"
 #include "unorderedmap.h"
+//#include "list.h"
 
 //#define VERSION {unknow} //define in Makefile
 
@@ -17,17 +19,53 @@ typedef struct Param {
 } Param;
 
 inline Param parse_args(const int argc, const char *argv[]);
-inline Node* parse_yy(const Param params);
-inline void exec_prog(const Node *root);
+inline Instr* parse_yy(const Param params);
+inline void exec_prog(const Instr *root);
 inline void free_params(const Param param);
 
 int main(const int argc, const char *argv[]) {
+	/*klist_t(32) *kl;
+	kliter_t(32) *p;
+	kl = kl_init(32);
+	*kl_pushp(32, kl) = 1;
+	*kl_pushp(32, kl) = 5;
+	*kl_pushp(32, kl) = 10;
+	//kl_shift(32, kl, 0);
+	int tmp;
+	kl_shift(32, kl, &tmp);
+	printf("-- %d\n", tmp);
+	for (p = kl_begin(kl); p != kl_end(kl); p = kl_next(p))
+		printf("%d\n", kl_val(p));
+	kl_destroy(32, kl);
+    exit(EXIT_SUCCESS);*/
+    /*List *l = List_new();
+    Instr *i;
+    double d = 5.0;
+    for(i=List_getFisrt(l) ; i not_eq NULL ; i=List_getNext(l))
+        printf("l -> %x\n", i);
+    putchar('\n');
+    List_insertBegin(l, (Instr*)newInstrExpr(DT_REAL, &d));
+    for(i=List_getFisrt(l) ; i not_eq NULL ; i=List_getNext(l))
+        printf("l -> %x\n", i);
+    putchar('\n');
+    List_insertEnd(l, (Instr*)newInstrExpr(DT_STRING, NULL));
+    for(i=List_getFisrt(l) ; i not_eq NULL ; i=List_getNext(l))
+        printf("l -> %x\n", i);
+    putchar('\n');
+    List_insertEnd(l, NULL);
+    for(i=List_getFisrt(l) ; i not_eq NULL ; i=List_getNext(l))
+        printf("l -> %x\n", i);
+    putchar('\n');
+    exit(EXIT_SUCCESS);*/
+    printf("Process PID %d\n", getpid());
+    system("pause");
     const Param params = parse_args(argc, argv);
-    const Node *root = parse_yy(params);
+    const Instr *root = parse_yy(params);
     if(root != NULL) {
         printf("\n>< Instructions :\n");
-        printGraph(root);
+        printInstr(root);
         exec_prog(root);
+        //TODO: free instructs + list
         free_params(params);
         return EXIT_SUCCESS;
     } else
@@ -42,7 +80,7 @@ inline Param parse_args(const int argc, const char *argv[]) {
     struct arg_lit *help, *version, *level, *verb;
     struct arg_file *in, *out;
     struct arg_end *end;
-    const void *argtable[] = {
+    /*const*/ void *argtable[] = {
         help    = arg_lit0("h", "help", "display this help and exit"),
         version = arg_lit0(NULL, "version",  "display version info and exit"),
         verb    = arg_lit0("v", "verbose", "verbose output"),
@@ -87,7 +125,7 @@ inline Param parse_args(const int argc, const char *argv[]) {
     }
 }
 
-inline Node* parse_yy(const Param params) {
+inline Instr* parse_yy(const Param params) {
     printf("\n>- Preparation du parser :\n");
     /*const*/ FILE *fp = fopen(params.file_input, "r");
     if(fp == NULL) {
@@ -95,7 +133,7 @@ inline Node* parse_yy(const Param params) {
         exit(EXIT_FAILURE);
     } else {
         yyin = fp;
-        Node *root = NULL;
+        Instr *root = NULL;
         printf("\n>< Parsing :\n");
         const int res = yyparse(&root);
         fclose(fp);
@@ -108,7 +146,7 @@ inline Node* parse_yy(const Param params) {
     }
 }
 
-inline void exec_prog(const Node *root) {
+inline void exec_prog(const Instr *root) {
     printf("\n>- Preparation du programme :\n");
     const HashMap *variables = HashMap_new();
     if(variables == NULL) {
@@ -116,7 +154,7 @@ inline void exec_prog(const Node *root) {
         exit(EXIT_FAILURE);
     } else {
         printf("\n>< Execution du programme :\n");
-        eval(root);
+        evalInstr(root);
         HashMap_free(variables);
     }
 }

@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "minicoin.parser.h"
-#include "minicoin_tree.h"
+//# include "minicoin_tree.h"
 
 %}
 
@@ -25,24 +25,23 @@ real  {int}("."{int})?{exp}?
 ")"   return(CL_PAR);
 
 {var} {
-    yylval.node = createNode(NTVAR);
-    yylval.node->var = (char*)strdup(yytext);
+    yylval.str = (char*)strdup(yytext);
     return(VAR);
 }
 
 {real} {
-    yylval.node = createNode(NTNUM);
-    yylval.node->val = atof(yytext);
+    yylval.real = atof(yytext);
     return(NUM);
 }
 
-"+"   { yylval.node = createNode(NTPLUS); return(PLUS); }
-"-"   { yylval.node = createNode(NTMIN);  return(MIN); }
-"*"   { yylval.node = createNode(NTMULT); return(MULT); }
-"/"   { yylval.node = createNode(NTDIV);  return(DIV); }
-"^"   { yylval.node = createNode(NTPOW);  return(POW); }
-"="   { yylval.node = createNode(NTAFF);  return(AFF); }
+"+"   return(PLUS);
+"-"   return(MIN);
+"*"   return(MULT);
+"/"   return(DIV);
+"^"   return(POW);
 
-";"   { return(COLON); }
+"="   return(AFF);
 
-<<EOF>>  { return(END); }
+";"   return(COLON);
+
+<<EOF>>  return(END);
