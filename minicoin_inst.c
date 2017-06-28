@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iso646.h>
+#include <math.h>
+#include <stdint.h>
+//#include <inttypes.h>
 #include <klist.h>
 
 #define __list_free(x)
@@ -11,6 +14,10 @@ KLIST_INIT(312, Instr_p, __list_free)
 #define PRINTTAB 2
 #define CHARTAB '|'
 
+#define result(typ, res) ((IsrcResult){.typ = res})
+//#define noResult (IsrcResult){.none = 0}
+#define noResult result(none, 0)
+
 void printMarge(const unsigned int sublvl);
 //static inline bool CheckInstrType(const Instr *instr, const InstrType type);
 #define CheckInstrType(instr, ctype) if(instr->type != ctype) {fprintf(stderr, "Erreur %s(%p) n'est pas %s (%d != %d)\n", __func__, instr, #ctype, instr->type, ctype); return false;}
@@ -19,11 +26,18 @@ void printMarge(const unsigned int sublvl);
 #define internCall(var, fn) ((var)->fn(var))
 #define internFree(var) internCall(var, free)
 #define internVerif(var) internCall(var, check)
+#define internEval(var) ((var)->eval(var))
+
+typedef union IsrcResult {
+    char *str;
+    double dbl;
+    uint8_t none;
+} IsrcResult;
 
 struct Instr {
     InstrType type; //Type d'instruction
     DataType retour; //Type data retournée par instruction
-    void (*eval)(const Instr*);
+    IsrcResult (*eval)(const Instr*);
     void (*free)(/*const*/ Instr*);
     void (*print)(const Instr*, const unsigned int);
     bool (*check)(const Instr*); //true = erreur, false = ok
@@ -73,11 +87,12 @@ bool verifInstrList(const Instr *instr) {
     return res;
 }
 
-void evalInstrList(const Instr *instr) {
-    /*const List *lst = ((InstrList*) instr)->list;
-    Instr *i;
-    for(i=List_getFisrt(lst) ; i not_eq NULL ; i=List_getNext(lst))
-        evalInstr(i);*/
+IsrcResult evalInstrList(const Instr *instr) {
+    const /*List*/klist_t(312) *lst = ((InstrList*) instr)->lst;
+    kliter_t(312) *p;
+    for(p = kl_begin(lst); p != kl_end(lst); p = kl_next(p))
+        internEval(kl_val(p));
+    return noResult;
 }
 
 void freeInstrList(/*const*/ Instr *instr) {
@@ -142,8 +157,17 @@ bool verifInstrExpr(const Instr *instr) {
     return true;
 }
 
-void evalInstrExpr(const Instr *instr) {
-    ;
+IsrcResult evalInstrExpr(const Instr *instr) {
+    const InstrExpr *expr = (InstrExpr*) instr;
+    switch(expr->dtype) {
+        case DT_REAL:
+            return result(dbl, expr->dbl);
+        case DT_STRING:
+            return result(str, expr->str);
+        default:
+            //TODO: ajouter sécurité pour arrêter programme
+            return noResult; //ne devrais jamais arriver
+    }
 }
 
 void freeInstrExpr(/*const*/ Instr *instr) {
@@ -192,11 +216,19 @@ void printInstrCalc(const Instr *instr, const unsigned int nbsp) {
 bool verifInstrCalc(const Instr *instr) {
     CheckInstrType(instr, IT_CALC);
     const InstrCalc *clc = (InstrCalc*) instr;
-    return (clc->i1 not_eq NULL) or (internVerif(clc->i1)) or (clc->i2 not_eq NULL) or (internVerif(clc->i2)) or (clc->i1->type == clc->i2->type);
+    return (clc->i1 not_eq NULL) or (internVerif(clc->i1)) or (clc->i2 not_eq NULL) or (internVerif(clc->i2)) or (clc->i1->type == clc->i2->type) or (clc->i1->retour == DT_REAL) or (clc->i2->retour == DT_REAL);
 }
 
-void evalInstrCalc(const Instr *instr) {
-    ;
+IsrcResult evalInstrCalc(const Instr *instr) {
+    const InstrCalc *calc = (InstrCalc*) instr;
+    switch(calc->otype) {
+        case OP_PLUS: return result(dbl, internEval(calc->i1).dbl + internEval(calc->i2).dbl);
+        case OP_MIN:  return result(dbl, internEval(calc->i1).dbl - internEval(calc->i2).dbl);
+        case OP_MULT: return result(dbl, internEval(calc->i1).dbl * internEval(calc->i2).dbl);
+        case OP_DIV:  return result(dbl, internEval(calc->i1).dbl / internEval(calc->i2).dbl);
+        case OP_POW:  return result(dbl, pow(internEval(calc->i1).dbl, internEval(calc->i2).dbl));
+        default: return noResult; //n'arrivera pas
+    }
 }
 
 void freeInstrCalc(/*const*/ Instr *instr) {
@@ -240,8 +272,9 @@ bool verifInstrAffect(const Instr *instr) {
     return (affct->var not_eq NULL) or (affct->expr not_eq NULL) or (internVerif(affct->expr));
 }
 
-void evalInstrAffect(const Instr *instr) {
-    ;
+IsrcResult evalInstrAffect(const Instr *instr) {
+    //TODO: implements affectation var
+    return noResult;
 }
 
 void freeInstrAffect(/*const*/ Instr *instr) {
