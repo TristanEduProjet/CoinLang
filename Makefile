@@ -46,7 +46,7 @@ all: libraries minicoin
 %.l.o: %.scanner.c
 	$(COMPILE.c) $(OUTPUT_OPTION) $<
 
-minicoin : libraries main.o minicoin.y.o minicoin.l.o minicoin_inst.o unorderedmap.o
+minicoin : libraries main.o minicoin.y.o minicoin.l.o $(patsubst %.c,%.o,$(sort $(wildcard minicoin_inst*.c))) unorderedmap.o
 	$(CXX) $(OUTPUT_OPTION) $(TARGET_ARCH) $(filter-out $<,$^) $(LDFLAGS) $(LOADLIBES) $(LDLIBS)
 
 libraries:
