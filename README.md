@@ -103,6 +103,28 @@ Cela concerne (au niveau le plus abstrait) :
 _Cela permettra plus tard la mise en place d'optimisation plus facile._
 
 
+# Utilisation
+```
+$> minicoin --help
+Usage: minicoin [-h|--help] [--version] [-v|--verbose] [--silent] [--show-instru
+cts={y,yes,n,no}] [--dump-session={y,yes,n,no}]  -f|-i|--file|--input|--in=<src>
+
+Full command-line of minicoin.
+
+  -h, --help                display this help and exit
+      --version             display version info and exit
+  -v, --verbose             verbose output
+      --silent              silent output
+      --show-instructs={y,yes,n,no}
+                            show program obtain
+      --dump-session={y,yes,n,no}
+                            dump session after execution
+                            (show variables and functions)
+  -f, -i, --file, --input, --in=<src>
+                            source file
+```
+
+
 # Dépendances
 ## Lex & Yacc
 Le compilateur est construit à l'aide de [Flex](https://fr.wikipedia.org/wiki/Flex_(logiciel)) et [Bison](https://fr.wikipedia.org/wiki/GNU_Bison), forks récents de [Lex](https://fr.wikipedia.org/wiki/Lex_(logiciel)) et [Yacc](https://fr.wikipedia.org/wiki/Yacc_(logiciel)).
