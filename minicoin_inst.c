@@ -1,15 +1,39 @@
-#define MINICOIN_INST_C
-#include "minicoin_inst.h"
+#include "minicoin_inst_intern.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include <iso646.h>
 
 #define PRINTTAB 2
 #define CHARTAB '|'
 
 
-void evalInstr(const Instr *instr) {
-    instr->eval(instr);
+SessionEval* evalInit() {
+    SessionEval *se = malloc(sizeof(SessionEval));
+    if(se == NULL) {
+        fputs("Erreur malloc(SessionEval)", stderr);
+    } else {
+        if(!initSessionVars(se))
+            fputs("Erreur new HashMap vars", stderr);
+        else
+            return se;
+    }
+    return NULL;
+}
+
+void evalFree(SessionEval **ptr) {
+    freeSessionVars(*ptr);
+    free(*ptr);
+    *ptr = NULL;
+}
+
+void evalPrint(const SessionEval *session) {
+    puts("Variables :");
+    printSessionVars(session);
+}
+
+void evalInstr(const SessionEval *session, const Instr *instr) {
+    instr->eval(session, instr);
 }
 
 void printInstr(const Instr *instr) {
@@ -32,5 +56,43 @@ void printMarge(const unsigned int sublvl) {
         putchar(' ');
         putchar(CHARTAB);
         putchar(' ');
+    }
+}
+
+
+DataBean result(const DataType type, ...) {
+    va_list av;
+    va_start(av, 1);
+    DataBean db;
+    db.type = type;
+    switch(type) {
+        case DT_REAL:
+            db.data.dbl = va_arg(av, double);
+            break;
+        case DT_STRING:
+            db.data.str = va_arg(av, char*);
+            break;
+        case DT_NONE:
+            db.data.none = 0;
+            break;
+        default:
+            fputs("~~erreur: bean type non reconnu !", stderr);
+            break;
+    }
+    va_end(av);
+    return db;
+}
+
+void printDataBean(const DataBean *db) {
+    switch(db->type) {
+        case DT_REAL:
+            printf("%lf", db->data.dbl);
+            break;
+        case DT_STRING:
+            fputs(db->data.str, stdout);
+            break;
+        default:
+            fputs("#type inconnu#", stdout);
+            break;
     }
 }

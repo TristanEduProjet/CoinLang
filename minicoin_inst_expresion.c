@@ -1,5 +1,4 @@
-#define MINICOIN_INST_C
-#include "minicoin_inst.h"
+#include "minicoin_inst_intern.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <iso646.h>
@@ -24,14 +23,14 @@ bool verifInstrCalc(const Instr *instr) {
     return (clc->i1 not_eq NULL) or (internVerif(clc->i1)) or (clc->i2 not_eq NULL) or (internVerif(clc->i2)) or (clc->i1->type == clc->i2->type) or (clc->i1->retour == DT_REAL) or (clc->i2->retour == DT_REAL);
 }
 
-IsrcResult evalInstrCalc(const Instr *instr) {
+DataBean evalInstrCalc(const SessionEval *session, const Instr *instr) {
     const InstrCalc *calc = (InstrCalc*) instr;
     switch(calc->otype) {
-        case OP_PLUS: return result(dbl, internEval(calc->i1).dbl + internEval(calc->i2).dbl);
-        case OP_MIN:  return result(dbl, internEval(calc->i1).dbl - internEval(calc->i2).dbl);
-        case OP_MULT: return result(dbl, internEval(calc->i1).dbl * internEval(calc->i2).dbl);
-        case OP_DIV:  return result(dbl, internEval(calc->i1).dbl / internEval(calc->i2).dbl);
-        case OP_POW:  return result(dbl, pow(internEval(calc->i1).dbl, internEval(calc->i2).dbl));
+        case OP_PLUS: return result(DT_REAL, internEval(session, calc->i1).data.dbl + internEval(session, calc->i2).data.dbl);
+        case OP_MIN:  return result(DT_REAL, internEval(session, calc->i1).data.dbl - internEval(session, calc->i2).data.dbl);
+        case OP_MULT: return result(DT_REAL, internEval(session, calc->i1).data.dbl * internEval(session, calc->i2).data.dbl);
+        case OP_DIV:  return result(DT_REAL, internEval(session, calc->i1).data.dbl / internEval(session, calc->i2).data.dbl);
+        case OP_POW:  return result(DT_REAL, pow(internEval(session, calc->i1).data.dbl, internEval(session, calc->i2).data.dbl));
         default: return noResult; //n'arrivera pas
     }
 }
@@ -86,13 +85,13 @@ bool verifInstrExpr(const Instr *instr) {
     return true;
 }
 
-IsrcResult evalInstrExpr(const Instr *instr) {
+DataBean evalInstrExpr(const SessionEval *session, const Instr *instr) {
     const InstrExpr *expr = (InstrExpr*) instr;
     switch(expr->dtype) {
         case DT_REAL:
-            return result(dbl, expr->dbl);
+            return result(DT_REAL, expr->dbl);
         case DT_STRING:
-            return result(str, expr->str);
+            return result(DT_STRING, expr->str);
         default:
             //TODO: ajouter sécurité pour arrêter programme
             return noResult; //ne devrais jamais arriver

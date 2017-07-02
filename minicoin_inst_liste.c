@@ -1,5 +1,4 @@
-#define MINICOIN_INST_C
-#include "minicoin_inst.h"
+#include "minicoin_inst_intern.h"
 #include <stdio.h>
 #include <iso646.h>
 #include <klist.h>
@@ -34,11 +33,11 @@ bool verifInstrList(const Instr *instr) {
     return res;
 }
 
-IsrcResult evalInstrList(const Instr *instr) {
+DataBean evalInstrList(const SessionEval *session, const Instr *instr) {
     const /*List*/klist_t(312) *lst = ((InstrList*) instr)->lst;
     kliter_t(312) *p;
     for(p = kl_begin(lst); p != kl_end(lst); p = kl_next(p))
-        internEval(kl_val(p));
+        internEval(session, kl_val(p));
     return noResult;
 }
 

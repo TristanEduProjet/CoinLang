@@ -16,8 +16,13 @@ typedef enum InstrType {
 } InstrType;
 
 typedef struct Instr Instr;
+typedef struct SessionEval SessionEval;
 
-void evalInstr(const Instr *instr);
+SessionEval* evalInit();
+void evalFree(SessionEval **ptr);
+void evalPrint(const SessionEval *session);
+
+void evalInstr(const SessionEval *session, const Instr *instr);
 void printInstr(const Instr *instr);
 void freeInstr(Instr **instr);
 bool verifInstr(const Instr *instr);
@@ -33,6 +38,9 @@ void addInstrList(const InstrList *lst, const Instr *instr);
 typedef enum DataType {
     DT_STRING,
     DT_REAL
+    #ifdef MINICOIN_INST_INTERN_H_INCLUDED
+    , DT_NONE
+    #endif //MINICOIN_INST_INTERN_H_INCLUDED
 } DataType;
 
 typedef struct InstrExpr InstrExpr;
@@ -56,41 +64,6 @@ InstrCalc* newInstrCalc(const OperType type, const Instr *i1, const Instr *i2);
 typedef struct InstrAffect InstrAffect;
 
 InstrAffect* newInstrAffect(const char *varname, const Instr *value);
-
-
-#ifdef MINICOIN_INST_C
-#include <stdint.h>
-//#include <inttypes.h>
-
-#define result(typ, res) ((IsrcResult){.typ = res})
-//#define noResult (IsrcResult){.none = 0}
-#define noResult result(none, 0)
-
-void printMarge(const unsigned int sublvl);
-//static inline bool CheckInstrType(const Instr *instr, const InstrType type);
-#define CheckInstrType(instr, ctype) if(instr->type != ctype) {fprintf(stderr, "Erreur %s(%p) n'est pas %s (%d != %d)\n", __func__, instr, #ctype, instr->type, ctype); return false;}
-#define MallocVerif(type, name) type *name = malloc(sizeof(type)); if(name == NULL) { fputs("Erreur malloc(" #type ")", stderr); exit(EXIT_FAILURE); }
-#define internPrint(var, nbsp) (var)->print(var, nbsp)
-#define internCall(var, fn) ((var)->fn(var))
-#define internFree(var) internCall(var, free)
-#define internVerif(var) internCall(var, check)
-#define internEval(var) ((var)->eval(var))
-
-typedef union IsrcResult {
-    char *str;
-    double dbl;
-    uint8_t none;
-} IsrcResult;
-
-struct Instr {
-    InstrType type; //Type d'instruction
-    DataType retour; //Type data retournée par instruction
-    IsrcResult (*eval)(const Instr*);
-    void (*free)(/*const*/ Instr*);
-    void (*print)(const Instr*, const unsigned int);
-    bool (*check)(const Instr*); //true = erreur, false = ok
-};
-#endif // MINICOIN_INST_C
 
 #ifdef __cplusplus
 }

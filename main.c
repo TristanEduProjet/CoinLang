@@ -5,7 +5,6 @@
 #include <unistd.h> //process.h
 #include <argtable3.h>
 #include "minicoin_inst.h"
-#include "unorderedmap.h"
 
 #ifndef VERSION
 #define VERSION {unknow} //define in Makefile
@@ -119,14 +118,17 @@ static inline void exec_prog(const Instr *root) {
         fprintf(stderr, "Erreur vérification interne\n");
         exit(EXIT_FAILURE);
     } else {
-        const HashMap *variables = HashMap_new();
-        if(variables == NULL) {
+        SessionEval *se = evalInit();
+        if(se == NULL) {
             fprintf(stderr, "Erreur initialisation interne\n");
             exit(EXIT_FAILURE);
         } else {
             printf("\n>< Execution du programme :\n");
-            evalInstr(root);
-            HashMap_free(variables);
+            evalInstr(se, root);
+            printf("\n>< Dump etat fin programme :\n");
+            evalPrint(se);
+            printf("\n>- Nettoyage ...\n");
+            evalFree(&se);
         }
     }
 }

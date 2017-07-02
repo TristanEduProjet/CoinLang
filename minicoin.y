@@ -5,7 +5,7 @@
 #include <string.h>
 #include "minicoin_inst.h"
 
-inline void yyerror(const Instr **r, const char *s);
+static inline void yyerror(const Instr **r, const char *s);
 %}
 
 %code requires {
@@ -72,6 +72,6 @@ Expr:
 
 %%
 
-inline void yyerror(const Instr **l, const char *s) {
+static inline void yyerror(const Instr **l, const char *s) {
     fprintf(stderr, "%s\n", s);
 }
