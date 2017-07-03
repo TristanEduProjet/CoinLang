@@ -1,3 +1,11 @@
+/**
+ * \file main.c
+ *
+ * \brief Main du programme
+ *
+ * \details Point d'entrée et de gestion du programme.
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -25,6 +33,10 @@
 extern int yyparse();
 extern FILE *yyin;
 
+/**
+ * \brief Paramètres internes reconnus
+ * \details Paramètres internes parser et reconnues depuis les paramètres utilisateur
+ */
 typedef struct Param {
     char *file_input;
     uint8_t verbosity;
@@ -35,6 +47,14 @@ static inline Instr* parse_yy(const Param params);
 static inline void exec_prog(const Param params, const Instr *root);
 static inline void free_params(const Param param);
 
+/**
+ * \brief Méthode principale
+ * \details Méthode principale et point d'entrée du programme
+ *
+ * \param[in] argc  nombre d'arguments présents dans \a argv
+ * \param[in] argv  arguments du programme
+ * \return Code de retour de l'application
+ */
 int main(const int argc, const char *argv[]) {
     printf("Process PID %d\n", getpid());
     const Param params = parse_args(argc, argv);
@@ -52,9 +72,17 @@ int main(const int argc, const char *argv[]) {
         return EXIT_FAILURE;
 }
 
-/*
- * http://www.argtable.org/tutorial/
- * https://linux.die.net/man/3/argtable
+/**
+ * \brief Parsing des arguments
+ * \details Vérification & traitement de paramètres du programme de #main.
+ *          Utilise la librairie \e Argtable3 .
+ *
+ * \param[in] argc nb arguments de \e main()
+ * \param[in] argv tabl arguments de \e main()
+ * \return Renvoi un #Param contenant les paramètres conformes aux arguments.
+ *
+ * \see http://www.argtable.org/tutorial/
+ * \see https://linux.die.net/man/3/argtable
  */
 static inline Param parse_args(const int argc, const char *argv[]) {
     struct arg_lit *help, *version, *level, *verb, *silent;
@@ -136,6 +164,12 @@ static inline Param parse_args(const int argc, const char *argv[]) {
     }
 }
 
+/**
+ * \brief Parsing du programme/script utilisateur
+ * \details Lecture et "parage" du programme (ou script) de l'utilisateur avec Yacc et Lex.
+ * \param[in] params  Paramètres du programme
+ * \return Une (généralement liste d') instruction(s) correspondant au programme
+ */
 static inline Instr* parse_yy(const Param params) {
     printf("\n>- Preparation du parser :\n");
     /*const*/ FILE *fp = fopen(params.file_input, "r");
@@ -157,6 +191,13 @@ static inline Instr* parse_yy(const Param params) {
     }
 }
 
+/**
+ * \brief exécute le programme/script obtenu
+ * \details Exécute le programme (ou script) obtenu du parsing.
+ *          Il est fortement conseillé de faire une vérification avant des instructions avant de lancer le programme (aucune ou peu durant l'éxécution).
+ * \param[in] params  Paramètres du programme
+ * \param[in] root  Instruction(s) racine du programme
+ */
 static inline void exec_prog(const Param params, const Instr *root) {
     printf("\n>- Preparation du programme :\n");
     if(not verifInstr(root)) {
@@ -180,6 +221,9 @@ static inline void exec_prog(const Param params, const Instr *root) {
     }
 }
 
+/**
+ * Petite fonction interne pour libérer une variable #Param.
+ */
 static inline void free_params(const Param param) {
     free(param.file_input);
 }
