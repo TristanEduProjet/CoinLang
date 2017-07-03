@@ -3,6 +3,7 @@
 #include <string.h>
 #include <iso646.h>
 #include <unistd.h> //process.h
+#include <stdint.h>
 #include <argtable3.h>
 #include "minicoin_inst.h"
 

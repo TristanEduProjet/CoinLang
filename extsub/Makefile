@@ -47,8 +47,10 @@ clean_argtable3:
 
 klib: klib/libklib.a
 
-KLIB_FILES = kexpr khmm kmath knetfile knhx kson kstring kthread
+KLIB_FILES = kexpr khmm knetfile knhx kson kstring
 # bgzf ksw kurl
+# kthread #uint8_t not recognize
+# kmath #M_SQRT2 problem
 KLIB_OBJ = $(patsubst %,klib/%,$(KLIB_FILES:=.o) ksa.o)
 # kopen.o
 klib/libklib.a: $(patsubst %,klib/%,$(KLIB_FILES:=.h) kbit.h kbtree.h kdq.h kgraph.h khash.h klist.h kseq.h ksort.h kvec.h)
@@ -59,6 +61,8 @@ clean_klib:
 	rm -f klib/*.o
 	rm -f klib/*.d
 	rm -f klib/klib/libklib.a
+
+clean_sglib: ;
 
 $(.LIBPATTERNS): %.o
 	$(AR) $(ARFLAGS) $@ $<
