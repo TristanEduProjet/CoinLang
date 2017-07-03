@@ -73,7 +73,7 @@ void printInstrExpr(const Instr *instr, const unsigned int nbsp) {
             printf("%lf\n", expr->dbl);
             break;
         case DT_STRING:
-            printf("var %s\n", expr->str);
+            printf("var \"%s\"\n", expr->str);
             break;
         default:
             puts("Unknown ...");

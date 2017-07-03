@@ -3,10 +3,12 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 #include "minicoin.parser.h"
 
+char buffer[SHRT_MAX];
+char *ptr_buf;
 %}
-
 empty [ \t\n]+
 
 num   [0-9]
@@ -14,6 +16,8 @@ int   {num}+
 exp   [eE][+-]?{int}
 var   [a-zA-Z_][a-zA-Z0-9_]+
 real  {int}("."{int})?{exp}?
+
+%x String
 
 %%
 
@@ -27,6 +31,41 @@ real  {int}("."{int})?{exp}?
     yylval.str = (char*)strdup(yytext);
     return(VAR);
 }
+
+\"      { BEGIN(String);
+          ptr_buf = buffer; }
+<String>\\n  *ptr_buf++ = '\n';
+<String>\\t  *ptr_buf++ = '\t';
+<String>\\r  *ptr_buf++ = '\r';
+<String>\\b  *ptr_buf++ = '\b';
+<String>\\f  *ptr_buf++ = '\f';
+<String>\\\" *ptr_buf++ = '\"';
+<String>\\[0-2]{0,1}[0-7]{2,3} { //[0-7]{1,3} /* octal escape sequence */
+                int result;
+                sscanf( yytext + 1, "%o", &result );
+                if( result > 0xff ) {
+                    fprintf(stderr, "Octal constant is out-of-bounds : %s\n", yytext);
+                    exit(EXIT_FAILURE);
+                } else
+                    *ptr_buf++ = result;
+        }
+<String>\\[0-9]+ { fprintf(stderr, "bad escape sequence : %s\n", yytext);
+                   exit(EXIT_FAILURE); }
+<String>\"  { *ptr_buf = '\0';
+                BEGIN(INITIAL); //BEGIN 0;
+                yylval.str = (char*)strdup(buffer);
+                return(STR);
+            }
+<String>\n  { fputs("unterminated string constant\n", stderr); //invalid string
+                exit(EXIT_FAILURE); }
+<String>.   { *ptr_buf++ = *yytext; /*}
+
+<str>\\(.|\n)  *ptr_buf++ = yytext[1];
+<str>[^\\\n\"]+  {
+        char *yptr = yytext;
+        while( *yptr )
+            *ptr_buf++ = *yptr++;*/
+        }
 
 {real} {
     yylval.real = atof(yytext);

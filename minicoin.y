@@ -19,14 +19,13 @@ static inline void yyerror(const Instr **r, const char *s);
 }
 
 %token  <real> NUM
-%token  <str> VAR
+%token  <str> VAR STR
 %token  PLUS MIN MULT DIV POW
 %token  OP_PAR CL_PAR AFF
 %token  COLON END
 
-%type  <instr> Instlist
-%type  <instr> Inst
-%type  <instr> Expr
+%type  <instr> Instlist Inst
+%type  <instr> Expr Expr_Numeric
 
 %left  OR AND
 %left  EQ NEQ
@@ -60,6 +59,12 @@ Inst:
   ;
 
 Expr:
+    Expr_Numeric
+  | STR { printf("str : %s\n", $1); $$ = (Instr*) newInstrExpr(DT_STRING, $1); }
+  | OP_PAR Expr CL_PAR { $$ = $2; }
+  ;
+
+Expr_Numeric:
     NUM     { $$ = (Instr*) newInstrExpr(DT_REAL, &$1); }
   | Expr PLUS Expr     { $$ = (Instr*) newInstrCalc(OP_PLUS, $1, $3); }
   | Expr MIN Expr      { $$ = (Instr*) newInstrCalc(OP_MIN, $1, $3); }
@@ -67,7 +72,6 @@ Expr:
   | Expr DIV Expr      { $$ = (Instr*) newInstrCalc(OP_DIV, $1, $3); }
   | MIN Expr %prec NEG { $$ = (Instr*) newInstrCalc(OP_MIN, NULL, $2); /* ? */ }
   | Expr POW Expr      { $$ = (Instr*) newInstrCalc(OP_POW, $1, $3); }
-  | OP_PAR Expr CL_PAR { $$ = $2; }
   ;
 
 %%
