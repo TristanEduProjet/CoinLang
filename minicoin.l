@@ -27,6 +27,9 @@ real  {int}("."{int})?{exp}?
 "("   return(OP_PAR);
 ")"   return(CL_PAR);
 
+"{"   return(OP_ACL);
+"}"   return(CL_ACL);
+
 {var} {
     yylval.str = (char*)strdup(yytext);
     return(VAR);

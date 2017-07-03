@@ -21,7 +21,7 @@ static inline void yyerror(const Instr **r, const char *s);
 %token  <real> NUM
 %token  <str> VAR STR
 %token  PLUS MIN MULT DIV POW
-%token  OP_PAR CL_PAR AFF
+%token  OP_PAR CL_PAR OP_ACL CL_ACL AFF
 %token  COLON END
 
 %type  <instr> Instlist Inst
@@ -56,11 +56,12 @@ Instlist:
 Inst:
     Expr COLON { $$ = $1; }
   | VAR AFF Expr COLON {$$ = (Instr*) newInstrAffect($1, $3);}
+  | OP_ACL Instlist CL_ACL { $$ = $2; }
   ;
 
 Expr:
     Expr_Numeric
-  | STR { printf("str : %s\n", $1); $$ = (Instr*) newInstrExpr(DT_STRING, $1); }
+  | STR { $$ = (Instr*) newInstrExpr(DT_STRING, $1); }
   | OP_PAR Expr CL_PAR { $$ = $2; }
   ;
 
