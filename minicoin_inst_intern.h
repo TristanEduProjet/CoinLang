@@ -12,7 +12,8 @@ extern "C" {
 #include <khash.h>
 
 void printMarge(const unsigned int sublvl);
-#define MallocVerif(type, name) type *name = malloc(sizeof(type)); if(name == NULL) { fputs("Erreur malloc(" #type ")", stderr); exit(EXIT_FAILURE); }
+#define MallocVerif(type, name) type *name = malloc(sizeof(type)); \
+                                if(name == NULL) { fputs("Erreur malloc(" #type ")", stderr); exit(EXIT_FAILURE); }
 
 /*typedef union IsrcResult {
 } IsrcResult;*/
@@ -22,6 +23,7 @@ typedef struct DataBean {
     union {
         char *str;
         double dbl;
+        int itg;
         uint8_t none;
     } data;
 } DataBean;
@@ -40,6 +42,13 @@ struct Instr {
     void (*print)(const Instr*, const unsigned int);
     bool (*check)(const Instr*); //true = erreur, false = ok
 };
+#define SetInstrBase(instr, type_, retour_, eval_, free_, print_, check_) \
+            instr->type = type_; \
+            instr->retour = retour_; \
+            instr->eval = eval_; \
+            instr->free = free_; \
+            instr->print = print_; \
+            instr->check = check_
 //static inline bool CheckInstrType(const Instr *instr, const InstrType type);
 #define CheckInstrType(instr, ctype) if(instr->type != ctype) {fprintf(stderr, "Erreur %s(%p) n'est pas %s (%d != %d)\n", __func__, instr, #ctype, instr->type, ctype); return false;}
 

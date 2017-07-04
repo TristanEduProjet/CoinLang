@@ -15,7 +15,7 @@ num   [0-9]
 int   {num}+
 exp   [eE][+-]?{int}
 var   [a-zA-Z_][a-zA-Z0-9_]+
-real  {int}("."{int})?{exp}?
+real  ({int}?"."{int}{exp}?|{int}({exp}{int}|[lL]?[fF]))
 
 %x String
 
@@ -72,7 +72,12 @@ real  {int}("."{int})?{exp}?
 
 {real} {
     yylval.real = atof(yytext);
-    return(NUM);
+    return(NUM_REAL);
+}
+
+{int} {
+    yylval.num = atoi(yytext);
+    return(NUM_INT);
 }
 
 "+"   return(PLUS);

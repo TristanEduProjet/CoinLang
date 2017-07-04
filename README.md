@@ -53,18 +53,19 @@ git submodule update --init --recursive
 
 * affectation des variables "simples" à un caractère
 * reconnaissance des types :
-    * nombres réels (flottant)
+    * nombres réels (flottant) : `x.x`, `x.xEx`, `xEx`, `.x`, `.xEx`, `Xf`, `Xlf`
+    * nombres entiers
     * chaine de caractères
 * calcul numérique de nombres
 * remplacement de l'arbre stockant le programme généré par Yacc par une liste chainée modulaire 
 * gestion des variables _(nom complet)_
+* notion de "bloc" d'instruction(s) pour de futures fonctionnalités
 
 
 # Fonctionnalités à venir
 
 * reconnaissance de types supplémentaires :
     * boolean
-    * nombres entiers
 * expression booléennes
 * instructions de base :
     * `if` et `else`
@@ -72,7 +73,6 @@ git submodule update --init --recursive
     * `for`
     * `while`
     * `switch`
-* notion de "bloc" d'instruction(s) pour de futures fonctionnalités
 * gestion basique de l'output
 * gestion des fonctions
 * vérification de la conformité des types (entre variables et fonctions)

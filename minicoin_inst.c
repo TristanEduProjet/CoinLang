@@ -69,6 +69,9 @@ DataBean result(const DataType type, ...) {
         case DT_REAL:
             db.data.dbl = va_arg(av, double);
             break;
+        case DT_INT:
+            db.data.itg = va_arg(av, int);
+            break;
         case DT_STRING:
             db.data.str = va_arg(av, char*);
             break;
@@ -87,6 +90,9 @@ void printDataBean(const DataBean *db) {
     switch(db->type) {
         case DT_REAL:
             printf("%lf", db->data.dbl);
+            break;
+        case DT_INT:
+            printf("%i", db->data.itg);
             break;
         case DT_STRING:
             fputs(db->data.str, stdout);

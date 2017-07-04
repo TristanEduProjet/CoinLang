@@ -59,11 +59,7 @@ void freeInstrAffect(/*const*/ Instr *instr) {
 
 InstrAffect* newInstrAffect(const char *varname, const Instr *value) {
     MallocVerif(InstrAffect, aff);
-    aff->eval = evalInstrAffect;
-    aff->print = printInstrAffect;
-    aff->free = freeInstrAffect;
-    aff->check = verifInstrAffect;
-    aff->type = IT_AFFECT;
+    SetInstrBase(aff, IT_AFFECT, DT_NONE, evalInstrAffect, freeInstrAffect, printInstrAffect, verifInstrAffect);
     aff->var = varname;
     aff->expr = value;
     return aff;

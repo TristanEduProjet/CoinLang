@@ -9,7 +9,6 @@ KLIST_INIT(312, Instr_p, __list_free)
 
 struct InstrList {
     struct Instr;
-    //List *list;
     klist_t(312) *lst;
 };
 
@@ -52,12 +51,7 @@ void freeInstrList(/*const*/ Instr *instr) {
 
 InstrList* newInstrList() {
     MallocVerif(InstrList, list);
-    list->eval = evalInstrList;
-    list->print = printInstrList;
-    list->free = freeInstrList;
-    list->check = verifInstrList;
-    list->type = IT_LIST;
-    //list->list = List_new();
+    SetInstrBase(list, IT_LIST, DT_NONE, evalInstrList, freeInstrList, printInstrList, verifInstrList);
     list->lst = kl_init(312);
     if(list->lst == NULL) {
         fputs("Erreur malloc(InstrList)", stderr);

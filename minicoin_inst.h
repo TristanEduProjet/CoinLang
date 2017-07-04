@@ -37,7 +37,8 @@ void addInstrList(const InstrList *lst, const Instr *instr);
 
 typedef enum DataType {
     DT_STRING,
-    DT_REAL
+    DT_REAL,
+    DT_INT
     #ifdef MINICOIN_INST_INTERN_H_INCLUDED
     , DT_NONE
     #endif //MINICOIN_INST_INTERN_H_INCLUDED

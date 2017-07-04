@@ -15,10 +15,12 @@ static inline void yyerror(const Instr **r, const char *s);
 %union {
     char *str;
     double real;
+    int num;
     Instr *instr;
 }
 
-%token  <real> NUM
+%token  <real> NUM_REAL
+%token  <num> NUM_INT
 %token  <str> VAR STR
 %token  PLUS MIN MULT DIV POW
 %token  OP_PAR CL_PAR OP_ACL CL_ACL AFF
@@ -66,7 +68,8 @@ Expr:
   ;
 
 Expr_Numeric:
-    NUM     { $$ = (Instr*) newInstrExpr(DT_REAL, &$1); }
+    NUM_REAL  { $$ = (Instr*) newInstrExpr(DT_REAL, &$1); }
+  | NUM_INT   { $$ = (Instr*) newInstrExpr(DT_INT, &$1); }
   | Expr PLUS Expr     { $$ = (Instr*) newInstrCalc(OP_PLUS, $1, $3); }
   | Expr MIN Expr      { $$ = (Instr*) newInstrCalc(OP_MIN, $1, $3); }
   | Expr MULT Expr     { $$ = (Instr*) newInstrCalc(OP_MULT, $1, $3); }
