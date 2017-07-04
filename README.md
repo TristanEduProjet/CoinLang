@@ -51,24 +51,25 @@ git submodule update --init --recursive
 
 # Fonctionnalités implémentées
 
-* affectation des variables "simples" à un caractère
+* ~~affectation des variables "simples" à un caractère~~
+* gestion des variables _(nom complet)_
+    * affectation
+    * récupération/accès (valeur)
 * reconnaissance des types :
     * nombres réels (flottant) : `x.x`, `x.xEx`, `xEx`, `.x`, `.xEx`, `Xf`, `Xlf`
     * nombres entiers
-    * chaine de caractères
+    * chaine de caractères (_avec (certain) échappement caractères spéciaux_)
     * boolean (`true`, `false`)
-* calcul numérique de nombres
+* calcul numérique de nombres (`+`, `-`, `*`, `/`, `^`)
 * expression booléennes :
     * `not`, `and`, `or`, `xor`
     * `==`, `!=`, `>`, `>=`, `<`, `<=`
 * remplacement de l'arbre stockant le programme généré par Yacc par une liste chainée modulaire 
-* gestion des variables _(nom complet)_
 * notion de "bloc" d'instruction(s) pour de futures fonctionnalités
 
 
 # Fonctionnalités à venir
 
-* expression booléennes (comparaison numérique)
 * instructions de base :
     * `if` et `else`
     * `if` ternaires

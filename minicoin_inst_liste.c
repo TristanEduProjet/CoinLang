@@ -64,5 +64,6 @@ InstrList* newInstrList() {
 
 void addInstrList(const InstrList *lst, const Instr *instr) {
     //List_insertEnd(lst, instr);
-    *kl_pushp(312, lst->lst) = instr;
+    if(instr not_eq NULL)
+        *kl_pushp(312, lst->lst) = instr;
 }

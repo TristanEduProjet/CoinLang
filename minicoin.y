@@ -26,9 +26,10 @@ static inline void yyerror(const Instr **r, const char *s);
 %token  <str>  VAR STR
 %token  <bln>  BOOL
 %token  PLUS MIN MULT DIV POW
-%token  OP_PAR CL_PAR OP_ACL CL_ACL AFF
+%token  OP_PAR CL_PAR OP_ACL CL_ACL
 %token  NOT AND OR XOR
-%token  COLON END
+%token  EQ NEQ GT LT GET LET
+%token  AFF COLON
 
 %type  <instr> Instlist Inst
 %type  <instr> Expr Expr_Numeric Expr_Boolean
@@ -40,6 +41,7 @@ static inline void yyerror(const Instr **r, const char *s);
 %left  MULT DIV
 %left  NEG NOT
 %right POW
+%left  COLON
 
 %parse-param {const Instr **root}
 %start Input
@@ -47,12 +49,7 @@ static inline void yyerror(const Instr **r, const char *s);
 
 Input:
     /* Nothing ... */
-  | Line Input { /* Nothing ... */ }
-
-Line:
-    END { YYACCEPT; }
-  | Instlist END { *root = $1; }
-  ;
+  | Instlist { *root = $1; }
 
 Instlist:
     Inst { $$ = (Instr*) newInstrList(); addInstrList((InstrList*)$$, $1); }
@@ -60,7 +57,8 @@ Instlist:
   ;
 
 Inst:
-    Expr COLON { $$ = $1; }
+    COLON { $$ = NULL; }
+  | Expr COLON { $$ = $1; }
   | VAR AFF Expr COLON {$$ = (Instr*) newInstrAffect_Set($1, $3);}
   | VAR AFF VAR COLON  {$$ = (Instr*) newInstrAffect_From($1, $3);}
   | OP_ACL Instlist CL_ACL { $$ = $2; }

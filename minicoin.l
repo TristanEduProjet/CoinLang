@@ -109,5 +109,3 @@ real  ({int}?"."{int}{exp}?|{int}({exp}{int}|[lL]?[fF]))
     yylval.str = (char*)strdup(yytext);
     return(VAR);
 }
-
-<<EOF>>  return(END);
