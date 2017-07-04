@@ -61,7 +61,8 @@ Instlist:
 
 Inst:
     Expr COLON { $$ = $1; }
-  | VAR AFF Expr COLON {$$ = (Instr*) newInstrAffect($1, $3);}
+  | VAR AFF Expr COLON {$$ = (Instr*) newInstrAffect_Set($1, $3);}
+  | VAR AFF VAR COLON  {$$ = (Instr*) newInstrAffect_From($1, $3);}
   | OP_ACL Instlist CL_ACL { $$ = $2; }
   ;
 

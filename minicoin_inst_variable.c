@@ -1,6 +1,8 @@
 #include "minicoin_inst_intern.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include <stdarg.h>
 #include <iso646.h>
 
 KHASH_MAP_INIT_STR(vars, DataBean)
@@ -17,52 +19,98 @@ KHASH_MAP_INIT_STR(vars, DataBean)
 
 struct InstrAffect {
     struct Instr;
-    char *var;
-    Instr *expr;
+    char *var; //!< variable key name
+    bool from; //set instr ou get var
+    union {
+        Instr *expr; //from = false;
+        char *key; //from = true
+    };
 };
 
 void printInstrAffect(const Instr *instr, const unsigned int nbsp) {
     const InstrAffect *aff = (InstrAffect*) instr;
     printMarge(nbsp); puts("Affectation");
     printMarge(nbsp+1); printf("Variable : %s\n", aff->var);
-    printMarge(nbsp+1); puts("Valeur :");
-    internPrint(aff->expr, nbsp+2);
+    printMarge(nbsp+1); fputs("Valeur :", stdout);
+    if(aff->from) {
+        printMarge(nbsp+1); printf("from %s\n", aff->key);
+    } else {
+        putchar('\n');
+        internPrint(aff->expr, nbsp+2);
+    }
 }
 
 bool verifInstrAffect(const Instr *instr) {
     CheckInstrType(instr, IT_AFFECT);
     const InstrAffect *affct = (InstrAffect*) instr;
-    return (affct->var not_eq NULL) and (affct->expr not_eq NULL) and (internVerif(affct->expr));
+    return (affct->var not_eq NULL)
+        and (affct->from ? (affct->key not_eq NULL)
+                         : (affct->expr not_eq NULL) and (internVerif(affct->expr)));
 }
 
 DataBean evalInstrAffect(const SessionEval *session, const Instr *instr) {
     const InstrAffect *affct = (InstrAffect*) instr;
     const khash_t(vars) *hm = session->variables;
     /*const*/ khint_t k = kh_get(vars, hm, affct->var);
+    khint_t kk;
+    bool not_new = true;
+    if(affct->from) {
+        kk = kh_get(vars, hm, affct->key);
+        if(kk == kh_end(hm)) {
+            fprintf(stderr, "Variable \"%s\" n'existe pas\n", affct->key);
+            exit(EXIT_FAILURE);
+        } /*else*/
+    }
     if(k == kh_end(hm)) {
         int ret;
         k = kh_put(vars, hm, affct->var, &ret); // add the key
-    } else if(affct->expr->retour != kh_val(hm, k).type) {
-        fprintf(stderr, "Erreur : variable \"%s\" de type %d et assignement %d\n", affct->var, kh_val(hm, k).type, affct->expr->retour);
-        exit(EXIT_FAILURE);
+        not_new = false;
     }
-    kh_value(hm, k) = internEval(session, affct->expr); // set the value of the key
+    if(affct->from) {
+        if(not_new and (kh_value(hm, kk).type != kh_val(hm, k).type)) {
+            fprintf(stderr, "Erreur : variable \"%s\" de type %d et de \"%s\" %d\n", affct->var, kh_val(hm, k).type, affct->key, kh_val(hm, kk).type);
+            exit(EXIT_FAILURE);
+        }
+        kh_value(hm, k) = kh_val(hm, kk); // set the value of the key
+    } else {
+        if(not_new and (affct->expr->retour != kh_val(hm, k).type)) {
+            fprintf(stderr, "Erreur : variable \"%s\" de type %d et assignement %d\n", affct->var, kh_val(hm, k).type, affct->expr->retour);
+            exit(EXIT_FAILURE);
+        }
+        kh_value(hm, k) = internEval(session, affct->expr); // set the value of the key
+    }
     return noResult;
 }
 
 void freeInstrAffect(/*const*/ Instr *instr) {
     const InstrAffect *affct = (InstrAffect*) instr;
     free(affct->var);
-    internFree(affct->expr);
+    if(affct->from)
+        free(affct->key);
+    else
+        internFree(affct->expr);
     free(/*instr*/ affct);
 }
 
-InstrAffect* newInstrAffect(const char *varname, const Instr *value) {
+InstrAffect* newInstrAffect_(const char *varname, const bool from, ...) {
     MallocVerif(InstrAffect, aff);
     SetInstrBase(aff, IT_AFFECT, DT_NONE, evalInstrAffect, freeInstrAffect, printInstrAffect, verifInstrAffect);
+    va_list valst;
+    va_start(valst, 1);
     aff->var = varname;
-    aff->expr = value;
+    aff->from = from;
+    if(from)
+        aff->key = va_arg(valst, char*);
+    else
+        aff->expr = va_arg(valst, Instr*);
+    va_end(valst);
     return aff;
+}
+InstrAffect* newInstrAffect_Set(const char *varname, const Instr *value) {
+    return newInstrAffect_(varname, false, value);
+}
+InstrAffect* newInstrAffect_From(const char *varname, const char *keyname) {
+    return newInstrAffect_(varname, true, keyname);
 }
 
 bool initSessionVars(/*const*/ SessionEval *session) {

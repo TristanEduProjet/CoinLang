@@ -93,7 +93,8 @@ InstrCompar* newInstrCompar(const ComparType oper, const Instr *i1, const Instr 
 
 typedef struct InstrAffect InstrAffect;
 
-InstrAffect* newInstrAffect(const char *varname, const Instr *value);
+InstrAffect* newInstrAffect_Set(const char *varname, const Instr *value);
+InstrAffect* newInstrAffect_From(const char *varname, const char *keyname);
 
 #ifdef __cplusplus
 }

@@ -4,6 +4,7 @@
 2+4*9;
 exp = 23.3e10;
 toto=56;
+toto2=toto;
 ok=26;
 chaine="\thello ! \"";
 {
