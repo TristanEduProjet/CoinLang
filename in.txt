@@ -15,3 +15,7 @@ chaine="\thello ! \"";
 plus = 2+2;
 float = .123;
 ent = 4;
+vrai = true;
+faux = false;
+et = true and true;
+ou = false or true;

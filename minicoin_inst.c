@@ -33,7 +33,7 @@ void evalPrint(const SessionEval *session) {
 }
 
 void evalInstr(const SessionEval *session, const Instr *instr) {
-    instr->eval(session, instr);
+    internEval(session, instr);
 }
 
 void printInstr(const Instr *instr) {
@@ -59,10 +59,7 @@ void printMarge(const unsigned int sublvl) {
     }
 }
 
-
-DataBean result(const DataType type, ...) {
-    va_list av;
-    va_start(av, 1);
+DataBean newDataBean_va(const DataType type, va_list av) {
     DataBean db;
     db.type = type;
     switch(type) {
@@ -72,6 +69,10 @@ DataBean result(const DataType type, ...) {
         case DT_INT:
             db.data.itg = va_arg(av, int);
             break;
+        case DT_BOOL:
+            //db.data.bln = (bool) va_arg(av, bool); //warn: '_Bool' is promoted to 'int' when passed through '...'
+            db.data.bln = (bool) va_arg(av, int);    //if this code is reached, the program will abort
+            break;
         case DT_STRING:
             db.data.str = va_arg(av, char*);
             break;
@@ -80,10 +81,18 @@ DataBean result(const DataType type, ...) {
             break;
         default:
             fputs("~~erreur: bean type non reconnu !", stderr);
+            exit(EXIT_FAILURE);
             break;
     }
-    va_end(av);
     return db;
+}
+
+DataBean newDataBean(const DataType type, ...) {
+    va_list av;
+    va_start(av, 1);
+    DataBean tmp = newDataBean_va(type, av);
+    va_end(av);
+    return tmp;
 }
 
 void printDataBean(const DataBean *db) {
@@ -94,11 +103,21 @@ void printDataBean(const DataBean *db) {
         case DT_INT:
             printf("%i", db->data.itg);
             break;
+        case DT_BOOL:
+            printf("%s", db->data.bln ? "true" : "false");
+            break;
         case DT_STRING:
             fputs(db->data.str, stdout);
             break;
         default:
             fputs("#type inconnu#", stdout);
             break;
+    }
+}
+
+void freeInternDataBean(/*const*/ DataBean *bean)  {
+    if(bean->type == DT_STRING) {
+        free(bean->data.str);
+        bean->data.str = NULL;
     }
 }

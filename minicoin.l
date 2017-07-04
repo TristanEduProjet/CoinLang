@@ -30,11 +30,6 @@ real  ({int}?"."{int}{exp}?|{int}({exp}{int}|[lL]?[fF]))
 "{"   return(OP_ACL);
 "}"   return(CL_ACL);
 
-{var} {
-    yylval.str = (char*)strdup(yytext);
-    return(VAR);
-}
-
 \"      { BEGIN(String);
           ptr_buf = buffer; }
 <String>\\n  *ptr_buf++ = '\n';
@@ -86,8 +81,26 @@ real  ({int}?"."{int}{exp}?|{int}({exp}{int}|[lL]?[fF]))
 "/"   return(DIV);
 "^"   return(POW);
 
-"="   return(AFF);
+"true" {
+    yylval.bln = true;
+    return(BOOL);
+}
+"false" {
+    yylval.bln = false;
+    return(BOOL);
+}
+"not"  return(NOT);
+"and"  return(AND);
+"or"   return(OR);
+"xor"  return(XOR);
 
-";"   return(COLON);
+"="    return(AFF);
+
+";"    return(COLON);
+
+{var} {
+    yylval.str = (char*)strdup(yytext);
+    return(VAR);
+}
 
 <<EOF>>  return(END);

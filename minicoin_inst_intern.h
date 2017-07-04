@@ -2,6 +2,7 @@
 #define MINICOIN_INST_INTERN_H_INCLUDED
 
 #include "minicoin_inst.h"
+#include <stdarg.h> //va_list
 
 #ifdef __cplusplus
 extern "C" {
@@ -24,15 +25,18 @@ typedef struct DataBean {
         char *str;
         double dbl;
         int itg;
+        bool bln;
         uint8_t none;
     } data;
 } DataBean;
 void printDataBean(const DataBean *db);
 #define CheckDataBeanType(databean, type) ((databean)->type == type)
 //#define result(typ, res) ((IsrcResult){.typ = res})
-DataBean result(const DataType type, ...);
+DataBean newDataBean(const DataType type, ...);
+DataBean newDataBean_va(const DataType type, va_list av);
 //#define noResult (IsrcResult){.none = 0}
-#define noResult result(DT_NONE, 0)
+#define noResult newDataBean(DT_NONE, 0)
+void freeInternDataBean(/*const*/ DataBean *bean);
 
 struct Instr {
     InstrType type; //Type d'instruction

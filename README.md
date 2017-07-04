@@ -56,7 +56,9 @@ git submodule update --init --recursive
     * nombres réels (flottant) : `x.x`, `x.xEx`, `xEx`, `.x`, `.xEx`, `Xf`, `Xlf`
     * nombres entiers
     * chaine de caractères
+    * boolean (`true`, `false`)
 * calcul numérique de nombres
+* expression booléennes (_partiel_) : `not`, `and`, `or`, `xor`
 * remplacement de l'arbre stockant le programme généré par Yacc par une liste chainée modulaire 
 * gestion des variables _(nom complet)_
 * notion de "bloc" d'instruction(s) pour de futures fonctionnalités
@@ -64,9 +66,7 @@ git submodule update --init --recursive
 
 # Fonctionnalités à venir
 
-* reconnaissance de types supplémentaires :
-    * boolean
-* expression booléennes
+* expression booléennes (comparaison numérique)
 * instructions de base :
     * `if` et `else`
     * `if` ternaires

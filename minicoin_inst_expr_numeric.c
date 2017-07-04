@@ -1,8 +1,9 @@
 #include "minicoin_inst_intern.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <iso646.h>
+#include <stdarg.h>
 #include <math.h>
+#include <iso646.h>
 
 struct InstrCalc {
     struct Instr;
@@ -24,8 +25,8 @@ bool verifInstrCalc(const Instr *instr) {
 }
 
 #define switch_i_dt(case_real, case_int) switch(calc->i1->retour) { \
-                                            case DT_REAL: return result(DT_REAL, case_real); break; \
-                                            case DT_INT:  return result(DT_INT, case_int); break; \
+                                            case DT_REAL: return newDataBean(DT_REAL, case_real); break; \
+                                            case DT_INT:  return newDataBean(DT_INT, case_int); break; \
                                             default: ; /*silent warning*/ \
                                          }
 DataBean evalInstrCalc(const SessionEval *session, const Instr *instr) {
@@ -72,30 +73,14 @@ InstrCalc* newInstrCalc(const OperType type, const Instr *i1, const Instr *i2) {
 
 struct InstrExpr {
     struct Instr;
-    //DataType dtype;
-    union {
-        char *str;
-        double dbl;
-        int itg;
-    };
+    DataBean val;
 };
 
 void printInstrExpr(const Instr *instr, const unsigned int nbsp) {
     const InstrExpr *expr = (InstrExpr*) instr;
     printMarge(nbsp);
-    switch(expr->retour) {
-        case DT_REAL:
-            printf("%lf\n", expr->dbl);
-            break;
-        case DT_INT:
-            printf("%i\n", expr->itg);
-            break;
-        case DT_STRING:
-            printf("var \"%s\"\n", expr->str);
-            break;
-        default:
-            puts("Unknown ...");
-    }
+    printDataBean(&(expr->val));
+    putchar('\n');
 }
 
 bool verifInstrExpr(const Instr *instr) {
@@ -105,47 +90,21 @@ bool verifInstrExpr(const Instr *instr) {
 
 DataBean evalInstrExpr(const SessionEval *session, const Instr *instr) {
     const InstrExpr *expr = (InstrExpr*) instr;
-    switch(expr->retour) {
-        case DT_REAL:
-            return result(DT_REAL, expr->dbl);
-        case DT_INT:
-            return result(DT_INT, expr->itg);
-        case DT_STRING:
-            return result(DT_STRING, expr->str);
-        default:
-            //TODO: ajouter sécurité pour arrêter programme
-            return noResult; //ne devrais jamais arriver
-    }
+    return expr->val;
 }
 
 void freeInstrExpr(/*const*/ Instr *instr) {
     const InstrExpr *expr = (InstrExpr*) instr;
-    if(expr->retour == DT_STRING)
-        free(expr->str);
+    freeInternDataBean(&(expr->val));
     free(/*instr*/ expr);
 }
 
-InstrExpr* newInstrExpr(const DataType type, void *data) {
+InstrExpr* newInstrExpr(const DataType type, ...) {
     MallocVerif(InstrExpr, expr);
-    expr->type = IT_EXPR;
-    expr->eval = evalInstrExpr;
-    expr->print = printInstrExpr;
-    expr->free = freeInstrExpr;
-    expr->check = verifInstrExpr;
-    expr->retour = type;
-    switch(type) {
-        case DT_REAL:
-            expr->dbl = *((double*) data);
-            break;
-        case DT_INT:
-            expr->itg = *((int*) data);
-            break;
-        case DT_STRING:
-            expr->str = (char*) data;
-            break;
-        default:
-            fputs("Type Expression non reconnue", stderr);
-            exit(EXIT_FAILURE);
-    }
+    SetInstrBase(expr, IT_EXPR, type, evalInstrExpr, freeInstrExpr, printInstrExpr, verifInstrExpr);
+    va_list data;
+    va_start(data, 1);
+    expr->val = newDataBean_va(type, data);
+    va_end(data);
     return expr;
 }

@@ -38,7 +38,8 @@ void addInstrList(const InstrList *lst, const Instr *instr);
 typedef enum DataType {
     DT_STRING,
     DT_REAL,
-    DT_INT
+    DT_INT,
+    DT_BOOL
     #ifdef MINICOIN_INST_INTERN_H_INCLUDED
     , DT_NONE
     #endif //MINICOIN_INST_INTERN_H_INCLUDED
@@ -46,7 +47,7 @@ typedef enum DataType {
 
 typedef struct InstrExpr InstrExpr;
 
-InstrExpr* newInstrExpr(const DataType type, void *data);
+InstrExpr* newInstrExpr(const DataType type, ...);
 
 
 typedef enum OperType {
@@ -60,6 +61,18 @@ typedef enum OperType {
 typedef struct InstrCalc InstrCalc;
 
 InstrCalc* newInstrCalc(const OperType type, const Instr *i1, const Instr *i2);
+
+
+typedef enum LogicType {
+    LT_NOT,
+    LT_AND,
+    LT_OR,
+    LT_XOR
+} LogicType;
+
+typedef struct InstrLogic InstrLogic;
+
+InstrLogic* newInstrLogic(const LogicType oper, const Instr *bi1, const Instr *bi2);
 
 
 typedef struct InstrAffect InstrAffect;
