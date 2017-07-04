@@ -2,7 +2,6 @@ EXTLIBS = $(sort $(dir $(wildcard extsub/*/)))
 CC = gcc
 GIT = git
 CPPFLAGS = -Wall -Wextra -MD -MP -DVERSION=\"$(shell $(GIT) describe --abbrev=4 --dirty --always --tags)\" $(patsubst %,-I%,$(EXTLIBS))
-CXXFLAGS = -std=c++11
 ifeq ($(CC), gcc)
 	CFLAGS += -fms-extensions -std=gnu99
 else
@@ -46,7 +45,7 @@ all: libraries minicoin
 %.l.o: %.scanner.c
 	$(COMPILE.c) $(OUTPUT_OPTION) $<
 
-minicoin : libraries main.o minicoin.y.o minicoin.l.o $(patsubst %.c,%.o,$(sort $(wildcard minicoin_inst*.c))) unorderedmap.o
+minicoin : libraries main.o minicoin.y.o minicoin.l.o $(patsubst %.c,%.o,$(sort $(wildcard minicoin_inst*.c)))
 	$(CXX) $(OUTPUT_OPTION) $(TARGET_ARCH) $(filter-out $<,$^) $(LDFLAGS) $(LOADLIBES) $(LDLIBS)
 
 libraries:
