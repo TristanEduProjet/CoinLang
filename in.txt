@@ -19,3 +19,6 @@ vrai = true;
 faux = false;
 et = true and true;
 ou = false or true;
+pg = 1 > 2;
+equ = 10 == 10;
+diff = 10 != 20;

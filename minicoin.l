@@ -94,6 +94,13 @@ real  ({int}?"."{int}{exp}?|{int}({exp}{int}|[lL]?[fF]))
 "or"   return(OR);
 "xor"  return(XOR);
 
+">"    return(GT);
+">="   return(GET);
+"<"    return(LT);
+"<="   return(LET);
+"=="   return(EQ);
+"!="   return(NEQ);
+
 "="    return(AFF);
 
 ";"    return(COLON);

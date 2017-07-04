@@ -89,6 +89,12 @@ Expr_Boolean:
   | Expr_Boolean AND Expr_Boolean { $$ = (Instr*) newInstrLogic(LT_AND, $1, $3); }
   | Expr_Boolean OR Expr_Boolean  { $$ = (Instr*) newInstrLogic(LT_OR, $1, $3); }
   | Expr_Boolean XOR Expr_Boolean { $$ = (Instr*) newInstrLogic(LT_XOR, $1, $3); }
+  | Expr_Numeric EQ Expr_Numeric  { $$ = (Instr*) newInstrCompar(CT_EQ, $1, $3); }
+  | Expr_Numeric NEQ Expr_Numeric { $$ = (Instr*) newInstrCompar(CT_NEQ, $1, $3); }
+  | Expr_Numeric GT Expr_Numeric  { $$ = (Instr*) newInstrCompar(CT_GT, $1, $3); }
+  | Expr_Numeric GET Expr_Numeric { $$ = (Instr*) newInstrCompar(CT_EGT, $1, $3); }
+  | Expr_Numeric LT Expr_Numeric  { $$ = (Instr*) newInstrCompar(CT_LT, $1, $3); }
+  | Expr_Numeric LET Expr_Numeric { $$ = (Instr*) newInstrCompar(CT_ELT, $1, $3); }
   ;
 
 %%

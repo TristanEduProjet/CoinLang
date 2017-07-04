@@ -10,9 +10,11 @@ extern "C" {
 typedef enum InstrType {
     IT_UNKNOWN = 0,
     IT_LIST,
-    IT_CALC,
     IT_AFFECT,
-    IT_EXPR
+    IT_EXPR,
+    IT_CALC,
+    IT_LOGIC,
+    IT_COMP
 } InstrType;
 
 typedef struct Instr Instr;
@@ -73,6 +75,20 @@ typedef enum LogicType {
 typedef struct InstrLogic InstrLogic;
 
 InstrLogic* newInstrLogic(const LogicType oper, const Instr *bi1, const Instr *bi2);
+
+
+typedef enum ComparType {
+    CT_EQ,
+    CT_NEQ,
+    CT_GT,
+    CT_EGT,
+    CT_LT,
+    CT_ELT
+} ComparType;
+
+typedef struct InstrCompar InstrCompar;
+
+InstrCompar* newInstrCompar(const ComparType oper, const Instr *i1, const Instr *i2);
 
 
 typedef struct InstrAffect InstrAffect;
