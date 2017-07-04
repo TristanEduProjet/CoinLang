@@ -85,7 +85,8 @@ void printInstrExpr(const Instr *instr, const unsigned int nbsp) {
 
 bool verifInstrExpr(const Instr *instr) {
     CheckInstrType(instr, IT_EXPR);
-    return true;
+    const InstrExpr *expr = (InstrExpr*) instr;
+    return (expr->retour == expr->val.type);
 }
 
 DataBean evalInstrExpr(const SessionEval *session, const Instr *instr) {

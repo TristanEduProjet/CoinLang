@@ -23,12 +23,12 @@ void printInstrList(const Instr *instr, const unsigned int nbsp) {
 
 bool verifInstrList(const Instr *instr) {
     CheckInstrType(instr, IT_LIST);
-    bool res = false;
+    bool res = true;
     const /*List*/klist_t(312) *lst = ((InstrList*) instr)->lst;
     kliter_t(312) *p;
     //Instr *i;
     for(p = kl_begin(lst); (not res) and (p != kl_end(lst)); p = kl_next(p))
-        res or_eq internVerif(kl_val(p));
+        res and_eq internVerif(kl_val(p));
     return res;
 }
 

@@ -32,7 +32,7 @@ void printInstrAffect(const Instr *instr, const unsigned int nbsp) {
 bool verifInstrAffect(const Instr *instr) {
     CheckInstrType(instr, IT_AFFECT);
     const InstrAffect *affct = (InstrAffect*) instr;
-    return (affct->var not_eq NULL) or (affct->expr not_eq NULL) or (internVerif(affct->expr));
+    return (affct->var not_eq NULL) and (affct->expr not_eq NULL) and (internVerif(affct->expr));
 }
 
 DataBean evalInstrAffect(const SessionEval *session, const Instr *instr) {

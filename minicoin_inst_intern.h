@@ -39,12 +39,12 @@ DataBean newDataBean_va(const DataType type, va_list av);
 void freeInternDataBean(/*const*/ DataBean *bean);
 
 struct Instr {
-    InstrType type; //Type d'instruction
-    DataType retour; //Type data retournée par instruction
+    InstrType type; //!< Type d'instruction
+    DataType retour; //!< Type data retournée par instruction
     DataBean (*eval)(const SessionEval*, const Instr*);
     void (*free)(/*const*/ Instr*);
     void (*print)(const Instr*, const unsigned int);
-    bool (*check)(const Instr*); //true = erreur, false = ok
+    bool (*check)(const Instr*); //!< false = erreur, true = ok
 };
 #define SetInstrBase(instr, type_, retour_, eval_, free_, print_, check_) \
             instr->type = type_; \
