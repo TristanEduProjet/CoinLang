@@ -26,7 +26,7 @@ bool verifInstrTest(const Instr *instr) {
     CheckInstrType(instr, IT_TEST);
     const InstrTest *test = (InstrTest*) instr;
     return (test->condition not_eq NULL) and internVerif(test->condition)
-        and (test->if_true) and internVerif(test->if_true)
+        and (test->if_true not_eq NULL) and internVerif(test->if_true)
         and ((test->if_false not_eq NULL) ? internVerif(test->if_false) : true);
 }
 
@@ -34,7 +34,7 @@ bool verifInstrTestTern(const Instr *instr) {
     CheckInstrType(instr, IT_TEST);
     const InstrTest *test = (InstrTest*) instr;
     return (test->condition not_eq NULL) and internVerif(test->condition)
-        and (test->if_true) and internVerif(test->if_true)
+        and (test->if_true not_eq NULL) and internVerif(test->if_true)
         and (test->if_false not_eq NULL) and internVerif(test->if_false)
         and (test->if_true not_eq NULL) and (test->if_true->retour == test->if_false->retour);
 }
