@@ -101,6 +101,9 @@ real  ({int}?"."{int}{exp}?|{int}({exp}{int}|[lL]?[fF]))
 "=="   return(EQ);
 "!="   return(NEQ);
 
+"if"   return(IF);
+"else" return(ELSE);
+
 "="    return(AFF);
 
 ";"    return(COLON);

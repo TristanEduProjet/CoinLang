@@ -14,7 +14,8 @@ typedef enum InstrType {
     IT_EXPR,
     IT_CALC,
     IT_LOGIC,
-    IT_COMP
+    IT_COMP,
+    IT_TEST
 } InstrType;
 
 typedef struct Instr Instr;
@@ -95,6 +96,11 @@ typedef struct InstrAffect InstrAffect;
 
 InstrAffect* newInstrAffect_Set(const char *varname, const Instr *value);
 InstrAffect* newInstrAffect_From(const char *varname, const char *keyname);
+
+
+typedef struct InstrTest InstrTest;
+
+InstrTest* newInstrTest(const Instr *cond, const Instr *yes, const Instr *no);
 
 #ifdef __cplusplus
 }

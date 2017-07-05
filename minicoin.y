@@ -30,9 +30,11 @@ static inline void yyerror(const Instr **r, const char *s);
 %token  NOT AND OR XOR
 %token  EQ NEQ GT LT GET LET
 %token  AFF COLON
+%token  IF ELSE
 
 %type  <instr> Instlist Inst
 %type  <instr> Expr Expr_Numeric Expr_Boolean
+%type  <instr> Test
 
 %left  OR AND
 %left  EQ NEQ
@@ -42,6 +44,9 @@ static inline void yyerror(const Instr **r, const char *s);
 %left  NEG NOT
 %right POW
 %left  COLON
+
+%nonassoc IFX
+%nonassoc ELSE
 
 %parse-param {const Instr **root}
 %start Input
@@ -62,6 +67,7 @@ Inst:
   | VAR AFF Expr COLON {$$ = (Instr*) newInstrAffect_Set($1, $3);}
   | VAR AFF VAR COLON  {$$ = (Instr*) newInstrAffect_From($1, $3);}
   | OP_ACL Instlist CL_ACL { $$ = $2; }
+  | Test { $$ = $1; }
   ;
 
 Expr:
@@ -94,6 +100,11 @@ Expr_Boolean:
   | Expr_Numeric GET Expr_Numeric { $$ = (Instr*) newInstrCompar(CT_EGT, $1, $3); }
   | Expr_Numeric LT Expr_Numeric  { $$ = (Instr*) newInstrCompar(CT_LT, $1, $3); }
   | Expr_Numeric LET Expr_Numeric { $$ = (Instr*) newInstrCompar(CT_ELT, $1, $3); }
+  ;
+
+Test:
+    IF OP_PAR Expr_Boolean CL_PAR Inst %prec IFX  { $$ = newInstrTest($3, $5, NULL); }
+  | IF OP_PAR Expr_Boolean CL_PAR Inst ELSE Inst  { $$ = newInstrTest($3, $5, $7); }
   ;
 
 %%

@@ -66,12 +66,13 @@ git submodule update --init --recursive
     * `==`, `!=`, `>`, `>=`, `<`, `<=`
 * remplacement de l'arbre stockant le programme généré par Yacc par une liste chainée modulaire 
 * notion de "bloc" d'instruction(s) pour de futures fonctionnalités
+* instructions de base :
+    * `if` et `else`
 
 
 # Fonctionnalités à venir
 
 * instructions de base :
-    * `if` et `else`
     * `if` ternaires
     * `for`
     * `while`

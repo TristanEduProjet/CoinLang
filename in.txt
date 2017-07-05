@@ -28,3 +28,9 @@ ou = false or true;
 pg = 1 > 2;
 equ = 10 == 10;
 diff = 10 != 20;
+
+if(false) {;}
+if(true)
+    if_vrai = true;
+else
+    if_vrai = false;

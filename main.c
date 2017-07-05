@@ -57,6 +57,7 @@ static inline void free_params(const Param param);
  */
 int main(const int argc, const char *argv[]) {
     printf("Process PID %d\n", getpid());
+    system("pause");
     const Param params = parse_args(argc, argv);
     const Instr *root = parse_yy(params);
     if(root != NULL) {
