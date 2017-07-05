@@ -1,0 +1,10 @@
+[submodule "extsub/argtable3"]
+	path = extsub/argtable3
+	url = https://github.com/argtable/argtable3.git
+[submodule "extsub/klib"]
+	path = extsub/klib
+	url = https://github.com/attractivechaos/klib.git
+	branch = master
+[submodule "extsub/sglib"]
+	path = extsub/sglib
+	url = https://github.com/stefanct/sglib.git

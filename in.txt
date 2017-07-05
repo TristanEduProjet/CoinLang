@@ -1,0 +1,37 @@
+1.0+3.0;
+;
+3f*5lf;(2+4)*9;
+2+(4*9);
+2+4*9;
+exp = 23.3e10;
+toto=56;
+toto2=toto;
+ok=26;
+
+chaine="\thello ! \"";
+{
+    4+2;
+    {
+        1+1;
+    }
+};;
+{;}
+
+plus = 2+2;
+float = .123;
+ent = 4;
+
+vrai = true;
+faux = false;
+et = true and true;
+ou = false or true;
+pg = 1 > 2;
+equ = 10 == 10;
+diff = 10 != 20;
+
+if(false) {;}
+if(true)
+    if_vrai = true;
+else
+    if_vrai = false;
+zero_si_faux = (1 == 2) ? 1 : 0;
