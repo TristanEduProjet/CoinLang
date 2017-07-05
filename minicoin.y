@@ -30,7 +30,7 @@ static inline void yyerror(const Instr **r, const char *s);
 %token  NOT AND OR XOR
 %token  EQ NEQ GT LT GET LET
 %token  AFF COLON
-%token  IF ELSE
+%token  IF ELSE TERN_THEN TERN_ELSE
 
 %type  <instr> Instlist Inst
 %type  <instr> Expr Expr_Numeric Expr_Boolean
@@ -86,6 +86,7 @@ Expr_Numeric:
   | Expr DIV Expr      { $$ = (Instr*) newInstrCalc(OP_DIV, $1, $3); }
   | MIN Expr %prec NEG { $$ = (Instr*) newInstrCalc(OP_MIN, NULL, $2); /* ? */ }
   | Expr POW Expr      { $$ = (Instr*) newInstrCalc(OP_POW, $1, $3); }
+  | OP_PAR Expr_Boolean CL_PAR TERN_THEN Expr TERN_ELSE Expr  { $$ = (Instr*) newInstrTest($2, $5, $7); }
   ;
 
 Expr_Boolean:
@@ -103,8 +104,8 @@ Expr_Boolean:
   ;
 
 Test:
-    IF OP_PAR Expr_Boolean CL_PAR Inst %prec IFX  { $$ = newInstrTest($3, $5, NULL); }
-  | IF OP_PAR Expr_Boolean CL_PAR Inst ELSE Inst  { $$ = newInstrTest($3, $5, $7); }
+    IF OP_PAR Expr_Boolean CL_PAR Inst %prec IFX  { $$ = (Instr*) newInstrTest($3, $5, NULL); }
+  | IF OP_PAR Expr_Boolean CL_PAR Inst ELSE Inst  { $$ = (Instr*) newInstrTest($3, $5, $7); }
   ;
 
 %%

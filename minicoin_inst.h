@@ -101,6 +101,7 @@ InstrAffect* newInstrAffect_From(const char *varname, const char *keyname);
 typedef struct InstrTest InstrTest;
 
 InstrTest* newInstrTest(const Instr *cond, const Instr *yes, const Instr *no);
+InstrTest* newInstrTestTern(const Instr *cond, const Instr *yes, const Instr *no);
 
 #ifdef __cplusplus
 }

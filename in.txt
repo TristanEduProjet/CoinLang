@@ -34,3 +34,4 @@ if(true)
     if_vrai = true;
 else
     if_vrai = false;
+zero_si_faux = (1 == 2) ? 1 : 0;

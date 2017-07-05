@@ -73,7 +73,7 @@ git submodule update --init --recursive
 # Fonctionnalités à venir
 
 * instructions de base :
-    * `if` ternaires
+    * `if` ternaires (_**bug**_)
     * `for`
     * `while`
     * `switch`

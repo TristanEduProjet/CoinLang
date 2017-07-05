@@ -103,6 +103,8 @@ real  ({int}?"."{int}{exp}?|{int}({exp}{int}|[lL]?[fF]))
 
 "if"   return(IF);
 "else" return(ELSE);
+"?"    return(TERN_THEN);
+":"    return(TERN_ELSE);
 
 "="    return(AFF);
 
