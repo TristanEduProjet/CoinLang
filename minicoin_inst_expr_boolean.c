@@ -27,8 +27,10 @@ void printInstrLogic(const Instr *instr, const unsigned int nbsp) {
 }
 
 bool verifInstrLogic(const Instr *instr) {
-    CheckInstrType(instr, IT_EXPR);
-    return false;
+    CheckInstrType(instr, IT_LOGIC);
+    const InstrLogic *lgc = (InstrLogic*) instr;
+    return (lgc->i1 not_eq NULL) and (internVerif(lgc->i1)) and (lgc->i1->retour == DT_BOOL)
+        and (lgc->i2 not_eq NULL) and (internVerif(lgc->i2)) and (lgc->i2->retour == DT_BOOL);
 }
 
 #define _case_(lt, op) case lt: return newDataBean(DT_BOOL, internEval(session, lgc->i1).data.bln op internEval(session, lgc->i2).data.bln)

@@ -35,3 +35,8 @@ if(true)
 else
     if_vrai = false;
 zero_si_faux = (1 == 2) ? 1 : 0;
+
+ww=0;
+while ( 1 < 5 ) {
+    ww = ww + 1;
+}

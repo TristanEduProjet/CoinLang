@@ -67,7 +67,8 @@ graph: minicoin.png
 
 debug: override CFLAGS += $(DBGFLAGS)
 debug: override CXXFLAGS += $(DBGFLAGS)
-debug: override YFLAGS += --report=solved -x $(if $(filter $(YACC), bison), --debug, -t)
+debug: override YFLAGS += --report=solved -x $(if $(filter $(YACC), bison), --debug --verbose, -t)
+debug: override LFLAGS += -d
 debug: all
 
 release: CFLAGS += $(RLSFLAGS)

@@ -21,7 +21,9 @@ void printInstrCalc(const Instr *instr, const unsigned int nbsp) {
 bool verifInstrCalc(const Instr *instr) {
     CheckInstrType(instr, IT_CALC);
     const InstrCalc *clc = (InstrCalc*) instr;
-    return (clc->i1 not_eq NULL) or (internVerif(clc->i1)) or (clc->i2 not_eq NULL) or (internVerif(clc->i2)) or (clc->i1->type == clc->i2->type) or (clc->i1->retour == DT_REAL) or (clc->i2->retour == DT_REAL);
+    return (clc->i1 not_eq NULL) and (internVerif(clc->i1))
+        and (clc->i2 not_eq NULL) and (internVerif(clc->i2))
+        and (clc->i1->type == clc->i2->type) and checkDataType(clc->i1->retour, DT_REAL) /*or checkDataType(clc->i2->retour, DT_REAL)*/;
 }
 
 #define switch_i_dt(case_real, case_int) switch(calc->i1->retour) { \

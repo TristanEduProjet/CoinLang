@@ -68,14 +68,14 @@ git submodule update --init --recursive
 * notion de "bloc" d'instruction(s) pour de futures fonctionnalités
 * instructions de base :
     * `if` et `else`
+    * `if` ternaires (_**bug**_)
+    * `for` (_**crash**_)
+    * `while` (_**crash**_)
 
 
 # Fonctionnalités à venir
 
 * instructions de base :
-    * `if` ternaires (_**bug**_)
-    * `for`
-    * `while`
     * `switch`
 * gestion basique de l'output
 * gestion des fonctions

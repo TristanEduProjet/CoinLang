@@ -15,7 +15,8 @@ typedef enum InstrType {
     IT_CALC,
     IT_LOGIC,
     IT_COMP,
-    IT_TEST
+    IT_TEST,
+    IT_LOOP
 } InstrType;
 
 typedef struct Instr Instr;
@@ -39,14 +40,16 @@ void addInstrList(const InstrList *lst, const Instr *instr);
 
 
 typedef enum DataType {
-    DT_STRING,
-    DT_REAL,
-    DT_INT,
-    DT_BOOL
+    DT_STRING = 0b00000001,
+    DT_REAL   = 0b00000010,
+    DT_INT    = 0b00000100,
+    DT_BOOL   = 0b00001000
     #ifdef MINICOIN_INST_INTERN_H_INCLUDED
-    , DT_NONE
+    , DT_NONE = 0b00000000
+    , DT_ANY  = 0b11111111
     #endif //MINICOIN_INST_INTERN_H_INCLUDED
 } DataType;
+#define checkDataType(to_check, type) ((to_check) & (type))
 
 typedef struct InstrExpr InstrExpr;
 
@@ -95,13 +98,19 @@ InstrCompar* newInstrCompar(const ComparType oper, const Instr *i1, const Instr 
 typedef struct InstrAffect InstrAffect;
 
 InstrAffect* newInstrAffect_Set(const char *varname, const Instr *value);
-InstrAffect* newInstrAffect_From(const char *varname, const char *keyname);
+InstrAffect* newInstrAffect_Get(const char *varname);
+//InstrAffect* newInstrAffect_GetCheck(const char *varname, const DataType type);
 
 
 typedef struct InstrTest InstrTest;
 
 InstrTest* newInstrTest(const Instr *cond, const Instr *yes, const Instr *no);
 InstrTest* newInstrTestTern(const Instr *cond, const Instr *yes, const Instr *no);
+
+
+typedef struct InstrLoop InstrLoop;
+
+InstrLoop* newInstrLoop(const Instr *cond, const Instr *act);
 
 #ifdef __cplusplus
 }

@@ -106,6 +106,9 @@ real  ({int}?"."{int}{exp}?|{int}({exp}{int}|[lL]?[fF]))
 "?"    return(TERN_THEN);
 ":"    return(TERN_ELSE);
 
+"while"  return(WHILE);
+"for"    return(FOR);
+
 "="    return(AFF);
 
 ";"    return(COLON);

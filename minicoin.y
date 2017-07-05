@@ -7,6 +7,15 @@
 #include "minicoin_inst.h"
 
 static inline void yyerror(const Instr **r, const char *s);
+
+#define YY_USER_ACTION {yylloc.first_line = yylineno; \
+        yylloc.first_column = colnum;                 \
+        colnum=colnum+yyleng;                         \
+        yylloc.last_column=colnum;                    \
+        yylloc.last_line = yylineno;}
+#ifdef DEBUG
+    int yydebug=1;
+#endif
 %}
 
 %code requires {
@@ -31,10 +40,11 @@ static inline void yyerror(const Instr **r, const char *s);
 %token  EQ NEQ GT LT GET LET
 %token  AFF COLON
 %token  IF ELSE TERN_THEN TERN_ELSE
+%token  WHILE FOR
 
 %type  <instr> Instlist Inst
 %type  <instr> Expr Expr_Numeric Expr_Boolean
-%type  <instr> Test
+%type  <instr> Test Loop
 
 %left  OR AND
 %left  EQ NEQ
@@ -48,6 +58,7 @@ static inline void yyerror(const Instr **r, const char *s);
 %nonassoc IFX
 %nonassoc ELSE
 
+%locations
 %parse-param {const Instr **root}
 %start Input
 %%
@@ -65,9 +76,9 @@ Inst:
     COLON { $$ = NULL; }
   | Expr COLON { $$ = $1; }
   | VAR AFF Expr COLON {$$ = (Instr*) newInstrAffect_Set($1, $3);}
-  | VAR AFF VAR COLON  {$$ = (Instr*) newInstrAffect_From($1, $3);}
   | OP_ACL Instlist CL_ACL { $$ = $2; }
   | Test { $$ = $1; }
+  | Loop { $$ = $1; }
   ;
 
 Expr:
@@ -80,6 +91,7 @@ Expr:
 Expr_Numeric:
     NUM_REAL  { $$ = (Instr*) newInstrExpr(DT_REAL, $1); }
   | NUM_INT   { $$ = (Instr*) newInstrExpr(DT_INT, $1); }
+  | VAR       { $$ = (Instr*) newInstrAffect_Get($1 /*, DT_REAL|DT_INT*/); }
   | Expr PLUS Expr     { $$ = (Instr*) newInstrCalc(OP_PLUS, $1, $3); }
   | Expr MIN Expr      { $$ = (Instr*) newInstrCalc(OP_MIN, $1, $3); }
   | Expr MULT Expr     { $$ = (Instr*) newInstrCalc(OP_MULT, $1, $3); }
@@ -91,6 +103,7 @@ Expr_Numeric:
 
 Expr_Boolean:
     BOOL  { $$ = (Instr*) newInstrExpr(DT_BOOL, $1); }
+  | VAR   { $$ = (Instr*) newInstrAffect_Get($1 /*, DT_BOOL*/); }
   | NOT Expr_Boolean              { $$ = (Instr*) newInstrLogic(LT_NOT, $2, NULL); }
   | Expr_Boolean AND Expr_Boolean { $$ = (Instr*) newInstrLogic(LT_AND, $1, $3); }
   | Expr_Boolean OR Expr_Boolean  { $$ = (Instr*) newInstrLogic(LT_OR, $1, $3); }
@@ -108,8 +121,18 @@ Test:
   | IF OP_PAR Expr_Boolean CL_PAR Inst ELSE Inst  { $$ = (Instr*) newInstrTest($3, $5, $7); }
   ;
 
+Loop:
+    WHILE OP_PAR Expr_Boolean CL_PAR Instlist { $$ = (Instr*)newInstrLoop($3, $5); }
+  | FOR OP_PAR Inst COLON Expr_Boolean COLON Inst CL_PAR Instlist { $$ = (Instr*) newInstrList();
+                                                                            addInstrList((InstrList*)$$, $3);
+                                                                            InstrList* tmp = (Instr*) newInstrList();
+                                                                            addInstrList(tmp, $9);
+                                                                            addInstrList(tmp, $7);
+                                                                            addInstrList((InstrList*)$$, (Instr*)newInstrLoop($5, (Instr*)tmp)); }
+  ;
+
 %%
 
 static inline void yyerror(const Instr **l, const char *s) {
-    fprintf(stderr, "%s\n", s);
+    fprintf(stderr, "line %d:%d to %d:%d :: %s\n", yylloc.first_line, yylloc.first_column, yylloc.last_line, yylloc.last_column, s);
 }
